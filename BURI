@@ -1,0 +1,523 @@
+// confirma a validacao do sistema para  cliente
+CLEAR
+COR3:=SETCOLOR()
+IF CONFIA()=.F.
+   FOR I=1 TO 22
+      @ I,0 SAY+CHR(1)+CHR(271)+CHR(2)+CHR(271)+CHR(1)+CHR(271)+CHR(1)+CHR(271)+CHR(2);
+               +CHR(271)+CHR(2)+CHR(271)+CHR(1)+CHR(271)+CHR(1)+CHR(271)+CHR(1)+CHR(271);
+               +CHR(2)+CHR(271)+CHR(2)+CHR(271)+CHR(2)+CHR(271)
+      @ I,20 SAY+CHR(1)+CHR(271)+CHR(2)+CHR(271)+CHR(1)+CHR(271)+CHR(1)+CHR(271)+CHR(2);
+               +CHR(271)+CHR(2)+CHR(271)+CHR(1)+CHR(271)+CHR(1)+CHR(271)+CHR(1)+CHR(271);
+               +CHR(2)+CHR(271)+CHR(2)+CHR(271)+CHR(2)+CHR(271)
+   NEXT
+   @ 7,11  SAY ' I am crazy...because copy program!'
+   @ 8,10  SAY ' (?) I am crazy...because copy program!'
+   @ 9,9   SAY ' (?) I am crazy...because copy program!'
+   @ 10,8  SAY ' (?) I am crazy...because copy program!'
+   @ 11,9  SAY ' (?) I am crazy...because copy program!'
+   @ 12,10 SAY ' (?) I am crazy...because copy program!'
+   @ 13,11 SAY ' (?) I am crazy...because copy program!'
+   DELETE FILE BURITI.EXE
+   INKEY(3)
+   SET COLOR TO
+   CLEAR
+   QUIT
+ENDIF
+
+@ 00,00 CLEAR TO 24,80
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     DEFINI€AO DE AMBIENTE
+
+SET WRAP ON
+SET KEY  28 TO HELP
+SET KEY  -3 TO VERDADOS
+SET KEY  -7 TO VERLOCAD
+SET KEY -45 TO DELMATRI
+SET EXCLUSIVE OFF
+SET SCOREBOARD OFF
+SET DATE BRITISH
+SET DELETED ON
+SET FIXED ON
+SET MESSAGE TO 24 CENTER
+SET DECIMAL TO 2
+SET DEFAULT TO (VCAMINHO)
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    EXTERNAS CLIPPER
+
+#include 'SETCURS.CH'
+#include 'DIRECTRY.CH'
+#include 'INKEY.CH'
+
+
+
+// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV    VARIµVEIS GLOBAIS
+
+ROTINA:=SPACE(10)
+IF VAL(GCORES)=2
+   GCOR1:='B/BG,W+/GR,,,B/BG'
+   GCOR2:='N/BG,W+/G,,,N/BG'
+   GCOR3:='N/RB,W+/G,,,N/RB'
+   GCOR4:='N/GR,W+/RB,,,N/GR'
+   GCOR5:='N/G,W+/RB,,,N/G'
+   GCOR6:='N/GR,W+/RB,,,N/GR'
+   GCOR7:='N/BG'
+   GCOR8:='N/RB'
+   GCOR9:='N/GR'
+   GCOR10:='N/G'
+ELSEIF VAL(GCORES)=1
+   GCOR1:='B/W,W+/BG,,,B/W'
+   GCOR2:='N/W,W+/G,,,N/W'
+   GCOR3:='N/W,W+/G,,,N/W'
+   GCOR4:='N/W,W+/BG,,,N/W'
+   GCOR5:='N/W,W+/BG,,,N/W'
+   GCOR6:='N/W,W+/BG,,,N/W'
+   GCOR7:='N/W'
+   GCOR8:='N/W'
+   GCOR9:='N/W'
+   GCOR10:='N/W'
+ENDIF
+
+NOEMP1:=CHR(032)+CHR(032)+CHR(032)+CHR(032)+CHR(032)+CHR(032)+CHR(032)+;
+       CHR(032)+CHR(032)
+
+TAMA:=TOME:=0
+@ 24,00 SAY+REPL(' ',80)
+A:=' '
+E10:=' PREENCHIMENTO OBRIGATORIO !!!'
+
+// ---------------------------------------
+
+PUBLIC A:=PROCNAME(), SENHA:=SPACE(5), VAABRE:=1,;
+       USUARIO:=SPACE(3), NO_USUARIO:=SPACE(35), CO_U:=SPACE(3), SI_:=SPACE(5)
+
+SETCOLOR('W/W,W/W')
+@ 01,00,24,79 BOX NOEMP1
+@ 12,23 clear to 12,57
+SET CURSOR OFF
+@ 12,30 SAY 'CARREGANDO O SISTEMA...'
+SET CURSOR ON
+
+
+// PPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+
+
+NOAUT:=CHR(032)+CHR(066)+CHR(121)+CHR(058)+CHR(032);
+      +CHR(083)+CHR(101)+CHR(114)+CHR(118)+CHR(111)+CHR(032);
+      +CHR(100)+CHR(101)+CHR(032)+CHR(068)+CHR(101)+CHR(117);
+      +CHR(115)+CHR(032)
+
+NOSIS:=CHR(069)+CHR(083)+CHR(067)+CHR(079)+CHR(076)+CHR(065)+CHR(082);
+      +CHR(032)+CHR(048)+CHR(055)+CHR(048)+CHR(032)
+
+NOFIR:=CHR(66)+CHR(73)+CHR(79)+CHR(83)+CHR(89)+CHR(83)+CHR(84)+CHR(69)+CHR(77)+CHR(32)
+
+// MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM  MENU PRINCIPAL
+
+SETCOLOR(GCOR7)
+@ 00,00 SAY 'F1 AJUDA  |                      |   '+NOSIS+'   |    '+NOAUT+'       '
+@ 00,19 SAY NOFIR
+SETCOLOR('BG/BG,BG/BG')
+@ 01,00,24,79 BOX NOEMP1
+SETCOLOR('W/W,W/W')
+@ 02,01,23,78 BOX NOEMP1
+SETCOLOR('W/BG')
+@ 24,1 SAY+REPL(' ',78)
+SET DECIMAL TO 0
+NOMTELA(NOESC)
+DO WHILE .T.
+      SETCOLOR(GCOR1)
+      @ 2, 1        PROMPT ' 1.SECRETARIA ' MESS '[ Entra na Rotina de Secretaria escolar ]'
+      @ ROW(),COL() PROMPT ' 2.FINANCEIRO ' MESS '[     Entra na rotina de tesouraria     ]'
+      @ ROW(),COL() PROMPT ' 3.ADMINISTRA.' MESS '[   Controle de Patrimonio e Diversos   ]'
+      @ ROW(),COL() PROMPT ' 4.PEDAGàGICO ' MESS '[   Controle de vida escolar do aluno   ]'
+      @ ROW(),COL() PROMPT ' 5.COMUN.CPD '  MESS '[   Msg. entre estacoes e CPD           ]'
+      @ ROW(),COL() PROMPT ' 6.FIM   '      MESS '[            Sai do Sistema             ]'
+      te_1:=SAVESCREEN(00,00,24,79)
+      MENU TO OP2
+      DO CASE
+       CASE OP2=1
+            IF !SENH()
+               SET COLOR TO
+               CLEAR
+               QUIT
+            ENDIF
+            IF LEFT(SI_,1)#'0'
+              SECRETARIA(LEFT(SI_,1))
+            ELSE
+             SETCOLOR(GCOR7)
+             CENTRA(24,0,'Acesso nao permitido!!!')
+             TONE(150,1)
+             TONE(215,2)
+             INKEY(0.9)
+             @ 24,0 SAY REPL(' ',80)
+           ENDIF
+       CASE OP2=2
+            IF !SENH()
+               SET COLOR TO
+               CLEAR
+               QUIT
+            ENDIF
+           IF SUBSTR(SI_,2,1)#'0'
+              FINANCEIRO()
+           ELSE
+             SETCOLOR(GCOR7)
+             CENTRA(24,0,'Acesso nao permitido!!!')
+             TONE(150,1)
+             TONE(215,2)
+             INKEY(0.9)
+             @ 24,0 SAY REPL(' ',80)
+           ENDIF
+       CASE OP2=3
+            IF !SENH()
+               SET COLOR TO
+               CLEAR
+               QUIT
+            ENDIF
+           IF SUBSTR(SI_,3,1)#'0'
+              ADMINISTRA()
+           ELSE
+             SETCOLOR(GCOR7)
+             CENTRA(24,0,'Acesso nao permitido!!!')
+             TONE(150,1)
+             TONE(215,2)
+             INKEY(0.9)
+             @ 24,0 SAY REPL(' ',80)
+           ENDIF
+       CASE OP2=4
+            IF !SENH()
+               SET COLOR TO
+               CLEAR
+               QUIT
+            ENDIF
+           IF SUBSTR(SI_,4,1)#'0'
+              PEDAGOGICO()
+           ELSE
+             SETCOLOR(GCOR7)
+             CENTRA(24,0,'Acesso nao permitido!!!')
+             TONE(150,1)
+             TONE(215,2)
+             INKEY(0.9)
+             @ 24,0 SAY REPL(' ',80)
+           ENDIF
+       CASE OP2=5
+            IF !SENH()
+               SET COLOR TO
+               CLEAR
+               QUIT
+            ENDIF
+           IF SUBSTR(SI_,5,1)#'0'
+              MANAGERCPD()
+           ELSE
+             SETCOLOR(GCOR7)
+             CENTRA(24,0,'Acesso nao permitido!!!')
+             TONE(150,1)
+             TONE(215,2)
+             INKEY(0.9)
+             @ 24,0 SAY REPL(' ',80)
+           ENDIF
+       CASE OP2=6 .OR. OP2=0 .OR. LASTKEY()=27
+          TE_ME4:=SAVESCREEN(2,3,23,78)
+          TELA(3,69,6,77)
+          @ 4,70 PROMPT '1->SIM '
+          @ 5,70 PROMPT '2->NAO '
+          MENU TO O3
+          IF O3=1
+             CLEAR
+             EXIT
+           ELSE
+             RESTSCREEN(2,3,23,78,TE_ME4)
+          ENDIF
+      ENDC
+   RESTSCREEN(0,00,24,79,TE_1)
+ENDDO
+SET COLOR TO
+CLEAR
+RETURN
+
+
+
+
+STATIC FUNCTION CONFIA
+CLEAR
+RUN VOL
+T:=SAVESCREEN(2,30,2,40)
+IF '1D21-4DE7'$T
+  RETURN.T.
+ELSE
+  RETURN.F.
+ENDIF
+
+
+FUNCTION VEREMPRE(VC,L,C)
+SELE CADEMPRE
+SET INDEX TO COEMPIND
+SEEK VC
+IF FOUND()
+      GO RECNO()
+        IF L#NIL .AND. C# NIL
+           @ L,C SAY ALLTRIM(NOM_FUNCIO)
+        ENDIF
+      RETURN.T.
+ ELSE
+    IF L#NIL .AND. C# NIL
+           @ L,C SAY '                                                      '
+     ENDIF
+     TE4:=SAVESCREEN(24,20,24,60)
+     CENTRA(24,00,'[ C¢digo Inexistente ]')
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(1)
+     RESTSCREEN(24,20,24,60,TE4)
+     RETURN.F.
+ENDIF
+
+
+
+FUNCTION VERCODFP(VC,L,C)
+SELE CODHISFP
+SET INDEX TO CODLCTIN
+SEEK VC
+IF FOUND()
+     GO RECNO()
+        IF L#NIL .AND. C#NIL
+           @ L,C SAY HISFP
+        ENDIF
+     SELE LCFP
+     SET INDEX TO COLANIND
+     RETURN.T.
+ ELSE
+     TE4:=SAVESCREEN(24,20,24,60)
+     CENTRA(24,00,'[ C¢digo Inexistente ]')
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(1)
+     RESTSCREEN(24,20,24,60,TE4)
+     SELE LCFP
+     SET INDEX TO COLANIND
+     RETURN.F.
+ENDIF
+
+
+FUNCTION VERCONTA(VC,l,c)
+AQ:=SELECT()
+IF VALTYPE(VC)$'N'
+   VC:=STRZERO(VC,5)
+ENDIF
+SELE CONTABIL
+SET INDEX TO COCONIND
+GO TOP
+SEEK VC
+IF FOUND()
+      IF READVAR()$'CONTA1'
+         CLA1:=CLAS_CONT
+      ELSEIF READVAR()$'CONTA2'
+         CLA2:=CLAS_CONT
+      ENDIF
+      IF L#NIL
+        @ L,C CLEAR TO L,(C+40)
+         @ L,C+1 SAY +left(ALLTRIM(NOME_CONT),30)
+      ENDIF
+      SELECT(AQ)
+      RETURN.T.
+ ELSE
+     TE4:=SAVESCREEN(24,20,24,60)
+     @ L,C CLEAR TO L,(C+40)
+     CENTRA(24,00,'[ C¢digo Inexistente ]')
+     TONE(100,2)
+     TONE(177,4)
+     INKEY(1)
+     RESTSCREEN(24,20,24,60,TE4)
+     SELECT(AQ)
+     RETURN.F.
+ENDIF
+
+
+FUNCTION VERPROD(VC,l,c)
+SELE CADPRO
+SET INDEX TO COPRQIND
+SEEK VC
+IF FOUND()
+   GO RECNO()
+   IF L#NIL
+      @ L,C SAY ALLTRIM(CADPRO->NOM_PRODU)
+   ENDIF
+ELSE
+     E:=1
+     TE4:=SAVESCREEN(24,20,24,60)
+     CENTRA(24,00,'[ C¢digo Inexistente ]')
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(1)
+     RESTSCREEN(24,20,24,60,TE4)
+ENDIF
+RETURN.T.
+
+
+FUNCTION CONFCODFP(VC)
+SELE CODHISFP
+SET INDEX TO CODLCTIN
+SEEK VC
+IF FOUND()
+     GO RECNO()
+     N_LCFP:=CODHISFP->HISFP
+     TE4:=SAVESCREEN(24,20,24,60)
+     CENTRA(24,00,'[ C¢digo ja existe   ]')
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(1)
+     RESTSCREEN(24,20,24,60,TE4)
+ENDIF
+SET INDEX TO CODLCTIN
+RETURN.T.
+
+
+
+
+FUNCTION CONFHIS(VCF,L,C)
+SELE HISTO
+SET INDEX TO COHISIND
+SEEK VCF
+  IF FOUND()
+     IF L#NIL
+        @ L,C CLEAR TO L,(C+30)
+        @ L,C SAY VCF+' '+LEFT(ALLTRIM(HISTO->HISTOR),30)
+     ENDIF
+      RETURN.T.
+  ELSEIF VCF$'9999'
+      RETURN.T.
+  ELSE
+     TE4:=SAVESCREEN(24,20,24,60)
+     CENTRA(24,00,'[ C¢digo Inexistente ]')
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(1)
+     CENTRA(24,00,'[ Saia e Cadastre-o  ]')
+     INKEY(1.5)
+     RESTSCREEN(24,20,24,60,TE4)
+     RETURN.F.
+ ENDIF
+
+
+FUNCTION VER_2
+SEEK N_MATE
+IF FOUND()
+     TONE(599,3)
+     GO RECNO()
+     E:=1
+PUBLIC C_MATE:=C_MATERI   ,;
+       N_MATE:=MATERIA
+ENDIF
+RETURN.T.
+
+
+
+FUNCTION VER_MMAA(V100)
+V101:=VAL(LEFT(V100,2))
+IF V101>0 .AND. V101<13
+    RETURN.T.
+ENDIF
+  TE4:=SAVESCREEN(24,0,24,80)
+  CENTRA(24,00,'[ Mes invalido! ]')
+  TONE(130,4)
+  TONE(777,3)
+  INKEY(1)
+  RESTSCREEN(24,0,24,80,TE4)
+RETURN.F.
+
+
+
+FUNCTION VER_6
+ASE:=SELECT()
+SELE CADA_MAT
+SEEK C_ALU
+  IF FOUND()
+      @ ROW(),COL()+2 SAY LEFT(NOM_ALU,30)+GRAU+' Gr. '+SERIE+TURMA+' N.:'+NUCLASSE
+      SELECT(ASE)
+      RETURN.T.
+  ELSE
+     TE4:=SAVESCREEN(24,20,24,60)
+     @ 24,30 SAY '[ C¢digo Inexistente ]'
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(2)
+     RESTSCREEN(24,20,24,60,TE4)
+     SELECT(ASE)
+     RETURN.F.
+ ENDIF
+RETURN
+
+
+
+
+FUNCTION VER_3
+SEEK N_PROF
+IF FOUND()
+     TONE(599,3)
+     GO RECNO()
+     E:=1
+PUBLIC C_PROF:=C_PROFESS  ,;
+       N_PROF:=PROFESSOR
+ENDIF
+RETURN.T.
+
+
+
+FUNCTION VER_8(WQ,L,C)
+A:=SELECT()
+SELE MATER
+SET INDEX TO MATECIND
+GO TOP
+SEEK WQ
+  IF FOUND()
+      IF L#NIL
+           @ L,C SAY '                                      '
+           @ L,C SAY ALLTRIM(MATERIA)
+      ENDIF
+      SELECT(A)
+      RETURN.T.
+  ELSEIF WQ$'000'
+          IF L#NIL
+             @ L,C SAY '                                      '
+             @ L,C SAY '  # SALTO DE FAIXA(COLUNA) ACEITO !   '
+          ENDIF
+      SELECT(A)
+      RETURN.T.
+  ELSE
+     TE4:=SAVESCREEN(24,20,24,60)
+     @ 24,30 SAY '[ C¢digo Inexistente ]'
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(1)
+     RESTSCREEN(24,20,24,60,TE4)
+     @ ROW(),31 SAY '                                      '
+     SELECT(A)
+     RETURN.F.
+ ENDIF
+
+
+
+
+FUNCTION VER_9(WQ,L,C)
+A:=SELECT()
+SELE PROFESS
+SET INDEX TO COPROIND
+GO TOP
+SEEK WQ
+  IF FOUND()
+      SELECT(A)
+      RETURN.T.
+  ELSE
+     TE4:=SAVESCREEN(24,20,24,60)
+     @ 24,30 SAY '[ C¢digo Inexistente ]'
+     TONE(1000,2)
+     TONE(500,3)
+     INKEY(1)
+     RESTSCREEN(24,20,24,60,TE4)
+     @ ROW(),31 SAY '                                      '
+     SELECT(A)
+     RETURN.F.
+ ENDIF
+
+
