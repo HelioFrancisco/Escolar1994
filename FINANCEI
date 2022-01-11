@@ -1,0 +1,2209 @@
+// *************   MENU SECUNDARIO - SISTEMA FINANCEIRO  **************
+
+FUNCTION FINANCEIRO
+NOMTELA('CONTROLE FINANCEIRO/ESTATISTICO ESCOLAR')
+DO WHILE .T.
+      @         2,1 PROMPT '  1.CADASTRO   '   MESS '[    Cadastro de contas cont beis  ...   ]'
+      @ ROW(),COL() PROMPT '  2.LANCAMENTO   ' MESS '[      Vide Menu - lctos. diversos       ]'
+      @ ROW(),COL() PROMPT '  3.CONSULTA   '   MESS '[   Consulta situacao Caixa, Aluno,...   ]'
+      @ ROW(),COL() PROMPT '  4.RELATORIOS   ' MESS '[   Emite e Gera Relatorios Diversos     ]'
+      @ ROW(),COL() PROMPT '  5.RETORNAR  '    MESS '[       Retorna a 1¦ Tela                ]'
+     MENU TO O3
+    TF1:=SAVESCREEN(0,00,24,79)
+     DO CASE
+       CASE O3=1
+          TF2:=SAVESCREEN(3,1,24,78)
+          TELA(3,1,6,14)
+          @ 4,2 PROMPT '1.Conta    ' MESS '[ Cad.Conta/Contabil-ATENCAO! Ver familia]'
+          @ 5,2 PROMPT '2.Historico' MESS '[    Cadastro de contas cont beis  ...   ]'
+          MENU TO OPC
+          IF OPC=1
+              CAD_CONTABIL()
+          ELSEIF OPC=2
+              CADASHIS()
+          ENDIF
+          @ 3,1 CLEAR TO 24,78
+          SETCOLOR(GCOR1)
+          RESTSCREEN(3,1,24,78,TF2)
+       CASE O3=2
+            LANC_FIN()
+       CASE O3=3
+            CONS_FIN()
+       CASE O3=4
+             MEN_RELAFIN()
+       CASE LASTKEY()=19
+            O2:=3
+            EXIT
+      CASE LASTKEY()=4
+            O2:=1
+            EXIT
+       CASE O3=5 .OR. O3=0 .OR. LASTKEY()=27
+          TF3:=SAVESCREEN(2,3,23,78)
+          TELA(3,69,6,77)
+          @ 4,70 PROMPT '1->SIM '
+          @ 5,70 PROMPT '2->NAO '
+          MENU TO OPC
+          IF OPC=1
+             CLEAR
+             EXIT
+           ELSE
+             RESTSCREEN(2,3,23,78,TF3)
+          ENDIF
+      ENDC
+      CLOSE ALL
+    RESTSCREEN(0,00,24,79,TF1)
+ENDDO
+RETURN
+
+
+// *********** SUB-MENU LANCAMENTOS **************
+
+
+FUNCTION LANC_FIN
+TF4:=SAVESCREEN(0,00,24,79)
+DO WHILE .T.
+SETCOLOR(GCOR8)
+TELA(3,16,7,31)
+SETCOLOR(GCOR3)
+      @       4,17 PROMPT '1.FICHA ALUNO '  MESS '[debitos e creditos c/c alunos(aut.cont.)]'
+      @ ROW()+1,17 PROMPT '2.DIARIO CONT.'  MESS '[ Lcto. diaria da contabilidade          ]'
+      @ ROW()+1,17 PROMPT '3.RETORNAR    '  MESS '[     Retorna a tela anterior            ]'
+     MENU TO O4
+    TF5:=SAVESCREEN(0,00,24,79)
+     DO CASE
+       CASE O4=1
+           TP:=' '
+           TELA(4,25,6,53)
+           @ 5,26 SAY '[A]utomatico | [M]anual '
+           @ 5,52 GET TP PICT'@S1!' VALID(TP$ 'AM ')
+           READ
+           IF TP$'A'
+              LANC_ALAUT()
+           ELSEIF TP$'M'
+              LANC_ALUNO()
+          ENDIF
+       CASE O4=2
+            LANCAMENTO()
+       CASE O4=3 .OR. O4=0 .OR. LASTKEY()=27
+             CLEAR
+             EXIT
+      ENDC
+      CLOSE ALL
+    RESTSCREEN(0,00,24,79,TF5)
+ENDDO
+RESTSCREEN(0,00,24,79,TF4)
+RETURN
+
+
+
+// *********** SUB-MENU CONSULTA SISTEMA FINANCEIRO **************
+
+
+FUNCTION CONS_FIN
+TF6:=SAVESCREEN(0,00,24,79)
+DO WHILE .T.
+SETCOLOR(GCOR8)
+TELA(3,33,12,47)
+SETCOLOR(GCOR3)
+      @       4,34 PROMPT '1.CONTA      '  MESS '[ P/conta (d‚bitos e cr‚ditos ou Saldo)  ]'
+      @ ROW()+1,34 PROMPT '2.GRUPO      '  MESS '[ Por grupo Ex.1.1.01.0000 … 1.1.01.999..]'
+      @ ROW()+1,34 PROMPT '3.BALANCETE  '  MESS '[       Cfe. per¡odo requerido           ]'
+      @ ROW()+1,34 PROMPT '4.BALAN€O    '  MESS '[     Cfe. ano corrente ou outro         ]'
+      @ ROW()+1,34 PROMPT '5.PLANO/CONTA'  MESS '[    Plano de contas - contabilidade     ]'
+      @ ROW()+1,34 PROMPT '6.DADOS ALUNO'  MESS '[   Cadastro de matriculas - completo    ]'
+      @ ROW()+1,34 PROMPT '7.FICHA ALUNO'  MESS '[     Ficha financeira do aluno          ]'
+      @ ROW()+1,34 PROMPT '8.RETORNAR   '  MESS '[      Retorna a tela anterior           ]'
+     MENU TO O4
+    TF7:=SAVESCREEN(0,00,24,79)
+     DO CASE
+       CASE O4=1
+            CONS_CONTA()
+       CASE O4=2
+            CONS_GRUPO()
+       CASE O4=3
+            CONS_BALAN()
+       CASE O4=4
+            INDISPO()
+           // CONS_BALCO()
+       CASE O4=5
+           CONS_PLCONT()
+       CASE O4=6
+           CON_MATRICULA()
+       CASE O4=7
+           CONS_CCALUNO()
+       CASE O4=8 .OR. O4=0 .OR. LASTKEY()=27
+             CLEAR
+             EXIT
+      ENDC
+      CLOSE ALL
+    RESTSCREEN(0,00,24,79,TF7)
+ENDDO
+RESTSCREEN(0,00,24,79,TF6)
+RETURN
+
+// ********* SUB-MENU DE TIPOS DE RELATàRIOS ********
+
+
+FUNCTION MEN_RELAFIN
+TF8:=SAVESCREEN(0,00,24,79)
+DO WHILE .T.
+SETCOLOR(GCOR8)
+TELA(3,48,17,63)
+SETCOLOR(GCOR3)
+      SETCOLOR('W/BG')
+      @       4,49 SAY    '   CONTABIL  '
+      SETCOLOR(GCOR3)
+      @ ROW()+1,49 PROMPT '1.C/CONTABIL ' MESS '[  Emite relat. cfe. conta cfe. escolha  ]'
+      @ ROW()+1,49 PROMPT '2.BALANCETE  ' MESS '[ Emite cfe. escolha de 1.1.001. a 9.99. ]'
+      @ ROW()+1,49 PROMPT '3 BALAN€O    ' MESS '[ Emite cfe. escolha de 1.1.001. a 9.99. ]'
+      @ ROW()+1,49 PROMPT '4.DIARIO     ' MESS '[             Di rio Cont bil            ]'
+      @ ROW()+1,49 PROMPT '5.LANCAMENTOS' MESS '[     Conferencia dos lctos diarios      ]'
+      @ ROW()+1,49 PROMPT '6.ESTATISTICA' MESS '[    Percentuais de desp. s/ receitas    ]'
+      SETCOLOR('W/BG')
+      @ ROW()+1,49 SAY    ' DIVERSOS    '
+      SETCOLOR(GCOR3)
+      @ ROW()+1,49 PROMPT '7.PLAN.CONTAS' MESS '[ Plano de contas - vide menu p/ escolha ]'
+      @ ROW()+1,49 PROMPT '8.HIST.PADRAO' MESS '[   Rel. historicos padrao cadastrados   ]'
+      @ ROW()+1,49 PROMPT '9.ALUNOS     ' MESS '[ Rel. por ordem ser/tur/gr - bols./part.]'
+      @ ROW()+1,49 PROMPT 'F.FICHA ALUNO' MESS '[       Ficha financeira do aluno        ]'
+      @ ROW()+1,49 PROMPT 'X.RETORNAR   ' MESS '[     Retorna a tela anterior            ]'
+     MENU TO O5
+     SETCOLOR(GCOR1)
+     TF9:=SAVESCREEN(0,0,24,79)
+     DO CASE
+       CASE O5=1
+            RELCONTA_CC()
+       CASE O5=2
+            RELBALANCE()
+       CASE O5=3
+            RELBALANCO()
+       CASE O5=4
+            RELDIARIO()
+       CASE O5=5
+            RELDICFE()
+       CASE O5=6
+            INDISPO()
+       CASE O5=7
+            REL_PLCONT()
+       CASE O5=8
+            REHISPADR()
+       CASE O5=9
+            RELA_ALUFIN()
+       CASE O5=10
+            SUBRELFICHA()
+       CASE O5=11 .OR. O5=0 .OR. LASTKEY()=27
+             CLEAR
+             EXIT
+      ENDC
+      CLOSE ALL
+   RESTSCREEN(0,00,24,79,TF9)
+ENDDO
+RESTSCREEN(0,00,24,79,TF8)
+RETURN
+
+
+// ************** SUB-MENU - LANCAMENTO - FINANCEIRO ********
+
+
+FUNCTION LANCAMENTO
+B:=PROCNAME()
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','E',3)
+   RETURN
+ENDIF
+NOMTELA('LAN€AMENTOS CONTµBEIS E ATUALIZA AUTOMATICA DE ESTOQUE')
+SELE LAN_CONTAB
+SET INDEX TO COBALIND, DDCCONIN
+SET DECIMAL TO 2
+V1:=DATE()
+AT:=0
+CONTA1:=0
+CONTA2:=0
+C_HISTO:=SPACE(4)
+V5:=SPACE(20)
+V6:=0
+DO WHILE .T.
+    TELA(6,3,10,77,3,12,19,27,32,57,'  DATA','DEBITA','CREDITA','HIST','     COMPLEMENTO','        VALOR')
+    setcolor(GCOR8)
+    TELA(11,10,13,70)
+    SETCOLOR(GCOR1)
+    @       9,4 GET V1 PICT'@K'
+    @  ROW(),13 GET CONTA1  PICT'99999' VALID(VERCONTA(CONTA1,12,14))
+    @  ROW(),20 GET CONTA2  PICT'99999' VALID(VERCONTA(CONTA2,12,14))
+    @  ROW(),28 GET C_HISTO PICT'9999' VALID(CONFHIS(C_HISTO,12,14,@V5))
+    @  ROW(),34 GET V5 PICT'@S20!'
+    @  ROW(),58 GET V6 PICT'@E 999,999,999,999.99' VALID(V6>0)
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    OP:=' '
+    TONE(272,0.75)
+    @ 24,26 SAY 'CONFIRMA INCLUSÇO ? Y/N [ ] '
+    @ 24,51 GET OP PICT'@S1!' VALID(OP$ 'YNC ')
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    IF OP$'C'
+       T_ELA:=SAVESCREEN(3,4,23,77)
+       SELE LAN_CONTAB
+       SET ORDER TO 2
+       BROWSE(3,4,23,77)
+       RESTSCREEN(3,4,23,77,T_ELA)
+    ELSEIF OP$'Y'
+        SELE LAN_CONTAB
+        SET ORDER TO 1
+        IF(VALTYPE(CONTA1)='N', CONTA1:=STRZERO(CONTA1,5),)
+        IF(VALTYPE(CONTA2)='N', CONTA2:=STRZERO(CONTA2,5),)
+        APPEND BLANK
+        REPLACE DATALC WITH V1,;
+                CONTAD WITH CONTA1,;
+                CONTAC WITH CONTA2,;
+                CODHIS WITH C_HISTO,;
+                COMHIS WITH V5,;
+                VRLANC WITH V6
+        COMMIT
+        V1:=DATE()
+        CONTA1:=0
+        CONTA2:=0
+        C_HISTO:=SPACE(4)
+        V5:=SPACE(20)
+        V6:=0
+    ENDIF
+ENDDO
+RETURN
+
+
+
+
+
+
+FUNCTION LANC_ALUNO
+B:=PROCNAME()
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+       RETURN
+ENDIF
+SET INDEX TO COMATIND
+IF !ABREARQ('CCALUNO','ALUNO','E',3)
+   RETURN
+ENDIF
+NOMTELA('LAN€AMENTOS FICHAS FINANCEIRA DO ALUNO')
+SELE ALUNO
+SET INDEX TO COALUIND
+C_ALU:=SPACE(6)
+V1:=DATE()
+C_HISTO:=SPACE(4)
+V5:=SPACE(20)
+V6:=0
+DC:=' '
+TELA(4,3,6,77)
+DO WHILE .T.
+    VSALD:=0
+    VSALC:=0
+    TELA(6,3,10,77,3,12,55,75,,,'  DATA','COD+COMPLEMENTO DO HISTORICO','        VALOR')
+    setcolor(GCOR8)
+    TELA(11,10,13,70)
+    SETCOLOR(GCOR1)
+    @  5,4 SAY 'Cod.Aluno: ' GET C_ALU PICT'@R 99999-9' VALID(VER_6())
+    READ
+    SELE ALUNO
+    SUM ALUNO->VRLANC TO VSALD FOR ALUNO->TIPLCT$'D' .AND. ALUNO->COD_ALU$C_ALU
+    SUM ALUNO->VRLANC TO VSALC FOR ALUNO->TIPLCT$'C' .AND. ALUNO->COD_ALU$C_ALU
+    @ 4,45 CLEAR TO 4,76
+    @ 4,45 SAY '[ Saldo: '
+    @ 4,col()+1 SAY (VSALD-VSALC) PICT'@E 999,999,999,999.99'
+    @ 4,74 SAY IF(VSALD>VSALC,'D','')
+    @ 4,74 SAY IF(VSALD<VSALC,'C','')
+    @ 4,75 SAY ']'
+    @       9,4 GET V1 PICT'@K'
+    @  ROW(),13 GET C_HISTO PICT'9999' VALID(CONFHIS(C_HISTO,12,14,@V5))
+    @  ROW(),18 GET V5 PICT'@S20!'
+    SET DECIMAL TO 2
+    @  ROW(),56 GET V6 PICT'@E 999,999,999,999.99' VALID(V6>0)
+    @  ROW(),76 GET DC PICT'@S1!' VALID(DC$ 'DC')
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    OP:=' '
+    TONE(272,0.75)
+    @ 24,26 SAY 'CONFIRMA INCLUSÇO ? Y/N [ ] '
+    @ 24,51 GET OP PICT'@S1!' VALID(OP$ 'YNC ')
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    SELE ALUNO
+    SET INDEX TO COALUIND
+    IF OP$'Y'
+       APPEND BLANK
+        REPLACE COD_ALU WITH C_ALU,;
+                DATALC WITH V1,;
+                CODHIS WITH C_HISTO,;
+                COMHIS WITH V5,;
+                VRLANC WITH V6,;
+                TIPLCT WITH DC
+        COMMIT
+        V1:=DATE()
+        C_HISTO:=SPACE(4)
+        V5:=SPACE(20)
+        V6:=0
+        DC:=' '
+        @ 5,4 CLEAR TO 5,76
+    ELSEIF OP$'C'
+      COT:=SETCOLOR()
+      QW:=SAVESCREEN(4,3,23,77)
+      BROWSE(4,3,23,77)
+      COMMIT
+      SETCOLOR(COT)
+      RESTSCREEN(4,3,23,77,QW)
+    ENDIF
+ENDDO
+RETURN
+
+
+
+
+FUNCTION LANC_ALAUT
+B:=PROCNAME()
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+       RETURN
+ENDIF
+SET INDEX TO COMATIND
+IF !ABREARQ('CCALUNO','ALUNO','E',3)
+   RETURN
+ENDIF
+NOMTELA('LAN€AMENTOS AUTOMATICO NAS FICHAS FINANCEIRA DO ALUNO')
+SET DECIMAL TO 2
+V1:=DATE()
+C_HISTO:=SPACE(4)
+V5:=SPACE(20)
+V6:=0
+DC:=' '
+ALU_TO:=' '
+ALU_PB:=' '
+ALU_IE:=' '
+ALU_ES:=' '
+AT:=0
+DO WHILE .T.
+    TELA(4,3,8,77,3,12,55,75,,,'  DATA','COD+COMPLEMENTO DO HISTORICO','        VALOR')
+    setcolor(GCOR8)
+    TELA(8,3,10,77)
+    TELA(11,3,15,77)
+    SETCOLOR(GCOR1)
+    @  7,4  GET V1 PICT'@K'
+    @  7,13 GET C_HISTO PICT'9999' VALID(CONFHIS(C_HISTO,9,14,@V5))
+    @  7,18 GET V5 PICT'@S20!'
+    @  7,56 GET V6 PICT'@E 999,999,999,999.99' VALID(V6>0)
+    @  7,76 GET DC PICT'@S1!' VALID(DC$ 'DC')
+    @ 12,20 SAY 'Lancar os dados acima para : '
+    @ 13,05 SAY 'Condi‡Æo :[1] Particular [2] Bolsista '
+    @ 13,43 GET ALU_PB PICT'9' VALID(ALU_PB$ '12')
+    @ 13,47 SAY '[I]nterno [E]xterno : '
+    @ 13,70 GET ALU_IE PICT'@SA!' VALID(ALU_IE$ 'IE')
+    @ 14,47 SAY '[S]EC     [E]SCOLA  : '
+    @ 14,70 GET ALU_ES PICT'@SA!' WHEN ALU_PB='2' VALID(ALU_ES$ 'SE')
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    OP:=' '
+    TONE(272,0.75)
+    @ 24,26 SAY 'CONFIRMA INCLUSÇO ? Y/N [ ] '
+    @ 24,51 GET OP PICT'@SA!' VALID(OP$ 'YN ')
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    SELE CADA_MAT
+    SET INDEX TO COMATIND
+    GO TOP
+    DO WHILE .NOT. EOF()
+       IF CADA_MAT->SIT_ALUN$ALU_PB .AND. CADA_MAT->SIT_INTE$ALU_IE .AND. CADA_MAT->SIT_ECON$ALU_ES
+          SELE ALUNO
+          SET INDEX TO COALUIND
+          APPEND BLANK
+           REPLACE COD_ALU WITH CADA_MAT->COD_ALU,;
+                   DATALC WITH V1,;
+                   CODHIS WITH C_HISTO,;
+                   COMHIS WITH V5,;
+                   VRLANC WITH V6,;
+                   TIPLCT WITH DC
+                   COMMIT
+          SELE CADA_MAT
+       ENDIF
+       SKIP
+    ENDDO
+ENDDO
+RETURN
+
+
+
+
+FUNCTION LANCGADO
+A:=SELECT()
+IF !ABREARQ('CADFAZES','FAZENDA','E',3)
+   RETURN
+ENDIF
+SELE FAZENDA
+TELA(19,30,23,52,30,35,44,48,,,'CODIGO','DATA','LANC','E/S')
+V11:=SPACE(4)
+V12:=CTOD(SPACE(8))
+V13:=0
+V14:=SPACE(1)
+DO WHILE .T.
+    TELA(19,30,23,52,30,35,44,48,,,'CODIGO','DATA','LANC','E/S')
+    @     22,31 GET V11 PICT'@R 9999'
+    @  ROW(),36 GET V12 PICT'@K'
+    @  ROW(),45 GET V13 PICT'999'
+    @  ROW(),49 GET V14 PICT'@S1!'
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    OP1:=' '
+    TONE(772,0.75)
+    @ 24,26 SAY 'CONFIRMA INCLUSÇO ? Y/N [ ] '
+    @ 24,51 GET OP1 PICT'@SA!' VALID(OP1$ 'YN ')
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    @ 24,51 CLEAR TO 24,51
+    IF OP1$'Y'
+        APPEND BLANK
+        REPLACE CODFAZ WITH V11,;
+                DATFAZ WITH V12,;
+                LANFAZ WITH V13,;
+                TIPFAZ WITH V14
+        COMMIT
+        V11:=SPACE(4)
+        V12:=CTOD(SPACE(8))
+        V13:=0
+        V14:=SPACE(1)
+    ENDIF
+ENDDO
+SELECT(A)
+RETURN
+
+
+
+
+FUNCTION ALTERA_CONT
+IF !ABREARQ('CADLANCO','LAN_CONTAB','E',3)
+   RETURN
+ENDIF
+NOMTELA('ALTERACAO DE LANCTO. CONTABIL')
+GO TOP
+SET ORDER TO 0
+SET DECIMAL TO 2
+TELA(4,1,21,78)
+BROWSE(5,2,20,77)
+SET DECIMAL TO 0
+RETURN
+
+
+
+FUNCTION FECHA_CONT
+RETURN
+
+
+
+
+// ***********  LANCAMENTO NO CONTA CORRENTE DO ALUNO (Ficha ) *********
+
+
+FUNCTION CAD_CONTABIL
+A:=PROCNAME()
+wt:=2
+SENH()
+IF WT=1; RETURN; ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','E',3)
+   RETURN
+ENDIF
+NOMTELA('CADASTRO CONTA CONTABIL ')
+CL_C:=SPACE(12)
+CO_C:=SPACE(5)
+NO_C:=SPACE(40)
+TI_C:=SPACE(1)
+O:=' '
+SETCOLOR('RB/G,N/GR,,,W/G')
+TELA(8,3,12,77,3,21,29,71,,,'Classifica‡Æo','Codigo','Nome da Conta','A/S')
+SETCOLOR('RB/G,N/GR,,,W/G')
+DO WHILE .T.
+   @       11,4  GET CL_C PICT'@R 9.9.99.999.99999' VALID(VAZIO(CL_C))
+   @   ROW(),22  GET CO_C PICT'@R 9999-9' VALID(VAZIO(CO_C))
+   @   ROW(),30  GET NO_C PICT'@S40!' VALID(VAZIO(NO_C))
+   @   ROW(),72  GET TI_C PICT'@S1!' VALID(TI_C$ 'AS')
+   READ
+   @ 12,26 SAY 'CONFIRMA INCLUSÇO ? Y/N [ ] '
+   @ 12,51 GET O PICT'@SA!' VALID(O$ 'YN')
+  READ
+   IF LASTKEY()=27
+      EXIT
+   ENDIF
+   LOCATE FOR CONTABIL->CLAS_CONT$CL_C
+   LOCATE FOR CONTABIL->CODI_CONT$CO_C
+   IF FOUND()
+       TONE(5000,2)
+       TONE(7000,2)
+       TONE(3000,2)
+      LOOP
+   ENDIF
+   IF O$ 'Y'
+      APPEND BLANK
+      REPL CLAS_CONT WITH CL_C ,;
+           CODI_CONT WITH CO_C ,;
+           NOME_CONT WITH NO_C ,;
+           TIPO_CONT WITH TI_C
+           COMMIT
+           CL_C:=SPACE(12)
+           CO_C:=SPACE(5)
+           NO_C:=SPACE(40)
+           TI_C:=SPACE(1)
+           O:=' '
+   ELSE 
+      O:=' '
+          LOOP
+  ENDIF
+ENDDO
+RETURN
+
+
+
+FUNCTION CADASHIS
+TE40:=SAVESCREEN(4,3,24,79)
+IF !ABREARQ('CADHISTO','HISTO','E',3)
+    RETURN
+ENDIF
+SELE HISTO
+SET INDEX TO COHISIND, HIHISIND
+GO TOP
+NOMTELA('CADASTRO DE HISTORICOS PADRAO')
+C_HISTO:=SPACE(4)
+N_HISTO:=SPACE(40)
+SETCOLOR('RB/G,N/GR,,,W/G')
+TELA(10,15,14,65,15,20,65,,,,'COD.','              HISTORICO ')
+SOMBRA(10,15,14,65)
+SETCOLOR('RB/G,N/GR,,,W/G')
+E:=0
+AT:=0
+DO WHILE .T.
+    O:=' '
+    SET ORDER TO 1
+    IF E=0
+      GO (LASTREC())
+      CO_D:=CODHIS
+      CO_D:=STRZERO((VAL(LEFT(CO_D,3))+1),3,0)
+      C_HISTO:=VAL(RIGHT(CO_D,1))
+        IF C_HISTO=1
+           C_HISTO:=CO_D+'0'
+        ELSEIF C_HISTO=2
+           C_HISTO:=CO_D+'9'
+        ELSEIF C_HISTO=3
+           C_HISTO:=CO_D+'8'
+        ELSEIF C_HISTO=4
+           C_HISTO:=CO_D+'7'
+        ELSEIF C_HISTO=5
+           C_HISTO:=CO_D+'6'
+        ELSEIF C_HISTO=6
+           C_HISTO:=CO_D+'5'
+        ELSEIF C_HISTO=7
+           C_HISTO:=CO_D+'4'
+        ELSEIF C_HISTO=8
+           C_HISTO:=CO_D+'3'
+        ELSEIF C_HISTO=9
+           C_HISTO:=CO_D+'2'
+        ELSEIF C_HISTO=0
+           C_HISTO:=CO_D+'1'
+       ENDIF
+     ENDIF
+   O:=' '
+   @      13,16 SAY C_HISTO PICT'@R 9999'
+   @   ROW(),21 GET N_HISTO PICT'@S40!' VALID(.NOT. EMPTY(N_HISTO))
+   READ
+   @ 14,26 SAY 'CONFIRMA INCLUSÇO ? Y/N [ ] '
+   @ 14,51 GET O PICT'@SA!' VALID(O$ 'YN ')
+  READ
+   IF LASTKEY()=27
+      EXIT
+   ELSEIF O$ 'Y' .AND. .NOT. EMPTY(N_HISTO)
+      APPEND BLANK
+      REPLACE CODHIS WITH C_HISTO ,;
+              HISTOR WITH N_HISTO
+        COMMIT
+        C_HISTO:=SPACE(4)
+        N_HISTO:=SPACE(40)
+  ENDIF
+  O:=' '
+ENDDO
+RETURN
+
+
+
+
+FUNCTION CONS_PLCONT
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+SET INDEX TO NOCONIND
+GO TOP
+NOMTELA('CONSULTA AO  P L A N O   D E   C O N T A S')
+SETCOLOR('RB/G,N/GR,,,W/G')
+TELA(4,3,23,77)
+SETCOLOR('RB/G,N/GR,,,W/G')
+    FOR I=5 TO 22
+        @ I,77 SAY CHR(177)
+    NEXT
+    @ 22,77 SAY CHR(25)
+    PRIVATE X:={}
+    DO WHILE .NOT. EOF()
+           YX:=LEFT(NOME_CONT,30)+' | '+(TRANSFORM(STR(CLAS_CONT),'@R 9.9.99.999.99999'))+' | '+(TRANSFORM(CODI_CONT,'@R 9999-9'))+' | '+TIPO_CONT
+       AADD(X,YX)
+       SKIP
+    ENDDO
+    SETCOLOR('B/BG,N/G,,,B/BG')
+    DO WHILE .T. .OR. LASTKEY()#27
+        V:=SAVESCREEN(4,3,23,77)
+        OP:=ACHOICE(5,4,22,76,X,,'Fop',,)
+        RESTSCREEN(4,3,23,77,V)
+        IF OP=0
+           EXIT
+        ENDIF
+   ENDDO
+   SETCOLOR(GCOR1)
+SET INDEX TO COMATIND
+RETURN
+
+
+
+
+FUNCTION CONS_CONTA
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','R',3)
+   RETURN
+ENDIF
+SET DECIMAL TO 2
+DO WHILE .T.
+    SELE LAN_CONTAB
+    SET INDEX TO DDCCONIN
+    GO TOP
+    NOMTELA('CONSULTA POR CONTA CONTABIL DEBITO/CREDITO')
+    CO_C:=SPACE(5)
+    TELA(4,10,8,70)
+    @ 5,11 SAY 'Conta:' GET CO_C PICT'@R 9999-9' VALID(VERCONTA(CO_C,5,25))
+    @ 6,11 TO 6,69
+    CO1:=CTOD(SPACE(8))
+    CO2:=DATE()
+    @ 7,11 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(co1))
+    @ 7,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+    READ
+    IF EMPTY(CO_C) .OR. LASTKEY()=27 .OR. EMPTY(CO1) .OR. EMPTY(CO2)
+       EXIT
+    ENDIF
+    TELA(4,3,20,77,3,12,21,30,36,57,'  DATA','DEBITO','CREDITO','HISTO.','  COMPLEMENTO','        VALOR')
+    FOR IV:=7 TO 19
+        @ IV,77 SAY CHR(177)
+    NEXT
+    @ 20,77 SAY CHR(25)
+    ILI:=7
+    VALORD:=0
+    VALORC:=0
+    SELE LAN_CONTAB
+    GO TOP
+    DO WHILE .NOT. EOF()
+          IF LAN_CONTAB->CONTAD$CO_C .OR. LAN_CONTAB->CONTAC$CO_C
+            IF CONTAD$CO_C
+                 VALORD+=VRLANC
+              ELSE
+                 VALORC+=VRLANC
+            ENDIF
+            IF LAN_CONTAB->DATALC>=CO1 .AND. LAN_CONTAB->DATALC<=CO2
+                  @     ILI,4  SAY DATALC PICT'@D'
+                  @   ROW(),13 SAY CONTAD PICT'99999'
+                  @   ROW(),22 SAY CONTAC PICT'99999'
+                  @   ROW(),31 SAY CODHIS PICT'999'
+                  @   ROW(),37 SAY COMHIS PICT'@S20!'
+                  @   ROW(),58 SAY VRLANC PICT'@E 999,999,999,999.99'
+               TELA(20,50,22,77,50,57,,,,,'Saldo:')
+              IF VALORD>VALORC
+                 @   21,58 SAY (VALORD-VALORC) PICT'@E 999,999,999,999.99'
+                 @   21,COL()+1 SAY 'D'
+               ELSEIF VALORD<VALORC
+                 @   21,58 SAY (VALORC-VALORD) PICT'@E 999,999,999,999.99'
+                 @   21,58 SAY ' '
+                 @   21,COL()+1 SAY 'C'
+               ELSE
+                 @   21,58 SAY '   .   .   .  0,00'
+                 @   21,COL()+1 SAY '0'
+              ENDIF
+              IF ILI=19 .AND. EOF()=.F.
+                 @ 20,77 SAY CHR(25)
+                 TONE(3500,2)
+                 INKEY(0)
+                 TELA(4,3,20,77,3,12,21,30,36,57,'  DATA','DEBITO','CREDITO','HISTO.','  COMPLEMENTO','        VALOR')
+                 ILI:=6
+                   FOR IV=7 TO 19
+                     @ IV,77 SAY CHR(177)
+                   NEXT
+                 @ 20,77 SAY CHR(25)
+              ENDIF
+            ILI++
+          ENDIF
+        ENDIF
+        SKIP
+     ENDDO
+@ 20,77 SAY CHR(177)
+TONE(2523,4)
+TONE(1230,2)
+INKEY(0)
+ENDDO
+RETURN
+
+
+
+
+
+
+FUNCTION CONS_GRUPO
+SETCOLOR(GCOR3)
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','R',3)
+   RETURN
+ENDIF
+SET INDEX TO COBALIND
+GO TOP
+NOMTELA('CONSULTA POR GRUPO CONTABIL ')
+COD1:='100000000000'
+COD2:='999999999999'
+TELA(4,20,10,60,20,40,,,,,'Conta Inicial','Conta Final')
+@ 7,21 GET COD1 PICT'@R 9.9.99.999.99999'
+@ 7,43 GET COD2 PICT'@R 9.9.99.999.99999'
+CO1:=CTOD(SPACE(8))
+CO2:=DATE()
+@ 8,21 TO 8,59
+@ 9,21 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(CO1))
+@ 9,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+READ
+IF LASTKEY()=27
+       RETURN
+ENDIF
+SELE CONTABIL
+VALOR1:=0
+    VALOR2:=0
+    VRX:=0
+    VRY:=0
+    SET DECIMAL TO 0
+    L:=7
+    TELA(4,2,22,78,2,23,40,58,,,'  CODIGO/CONTA   ','   DEBITO   ','   CREDITO  ','     SALDO ')
+    DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+          IF VAL(RIGHT(STR(contabil->CLAS_CONT,12),5))#0
+              D:=CONTABIL->CODI_CONT
+              NC:=LEFT(CONTABIL->NOME_CONT,14)
+           ELSE
+             SKIP
+             LOOP
+           ENDIF
+          SELE LAN_CONTAB
+          SET INDEX TO DDCCONIN
+          GO TOP
+          SET DECIMAL TO 2
+          SUM VRLANC TO VALOR1 FOR CONTAD=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+          SUM VRLANC TO VALOR2 FOR CONTAC=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+          IF VALOR1#0 .OR. VALOR2#0
+             @ L,3 SAY D+' '+NC
+             @ L,24 SAY VALOR1 PICT'@E 9,999,999,999.99'
+             @ L,41 SAY VALOR2 PICT'@E 9,999,999,999.99'
+             @ L,59 SAY (VALOR1-VALOR2) PICT'@E 99,999,999,999.99'
+             IF VALOR1>VALOR2
+                @ L,77 SAY 'D'
+              ELSEIF VALOR1<VALOR2
+                @ L,77 SAY 'C'
+              ENDIF
+             L++
+          ENDIF
+          VRX+=VALOR1
+          VRY+=VALOR2
+          VALOR1:=0
+          VALOR2:=0
+          IF L>=22
+                  INKEY(0)
+                  L:=7
+                  TELA(4,2,22,78,2,23,40,58,,,'  CODIGO/CONTA   ','   DEBITO   ','   CREDITO  ','     SALDO ')
+          ENDIF
+          SET DECIMAL TO 0
+          SELE CONTABIL
+          SKIP
+ENDDO
+SETCOLOR(GCOR4)
+@ 23,2 CLEAR TO 23,78
+@ 23,2 SAY '[ Totalizacao. . . . . . . . . :'
+@ 23,23 SAY VRX PICT'@E 99,999,999,999.99'
+@ 23,41 SAY VRY PICT'@E 99,999,999,999.99'
+@ 23,59 SAY (VRX-VRY) PICT'@E 99,999,999,999.99'
+@ 23,78 SAY ']'
+IF VRX>VRY
+  @ 23,77 SAY 'D'
+ELSEIF VRX<VRY
+  @ 23,77 SAY 'C'
+ENDIF
+SETCOLOR(GCOR3)
+INKEY(0)
+RETURN
+
+
+
+
+FUNCTION CONS_BALAN
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','R',3)
+   RETURN
+ENDIF
+SETCOLOR(GCOR1)
+NOMTELA('CONSULTA BALANCETE POR POR DATA')
+SET INDEX TO COBALIND
+    GO TOP
+    TELA(4,20,6,60)
+    CO1:=CTOD(SPACE(8))
+    CO2:=DATE()
+    @ 5,25 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(CO1))
+    @ 5,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+    READ
+    IF LASTKEY()=27
+       RETURN
+    ENDIF
+    SELE CONTABIL
+    VALOR1:=0
+    VALOR2:=0
+    VRX:=0
+    VRY:=0
+    SET DECIMAL TO 0
+    L:=5
+    TELA(4,2,22,77)
+    DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+          IF VAL(RIGHT(STR(contabil->CLAS_CONT,12),5))#0
+              D:=CONTABIL->CODI_CONT
+              NC:=LEFT(CONTABIL->NOME_CONT,20)
+           ELSE
+             SKIP
+             LOOP
+           ENDIF
+          SELE LAN_CONTAB
+          SET INDEX TO DDCCONIN
+          GO TOP
+          SET DECIMAL TO 2
+          SUM VRLANC TO VALOR1 FOR CONTAD=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+          SUM VRLANC TO VALOR2 FOR CONTAC=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+          IF VALOR1#0 .OR. VALOR2#0
+             @ L,4 SAY D+' '+NC
+             @ L,17 SAY VALOR1 PICT'@E 99,999,999,999.99'
+             SETCOLOR('W+/N')
+             @ L,COL()+1 SAY 'D'
+             SETCOLOR(GCOR1)
+             @ L,37 SAY VALOR2 PICT'@E 99,999,999,999.99'
+             SETCOLOR('W+/N')
+             @ L,COL()+1 SAY 'C'
+             SETCOLOR(GCOR1)
+             @ L,58 SAY (VALOR1-VALOR2) PICT'@E 99,999,999,999.99'
+             SETCOLOR('W+/N')
+             IF VALOR1>VALOR2
+                @ L,76 SAY 'D'
+              ELSEIF VALOR1<VALOR2
+                @ L,76 SAY 'C'
+              ENDIF
+             SETCOLOR(GCOR1)
+             L+=1
+          ENDIF
+          VRX+=VALOR1
+          VRY+=VALOR2
+          VALOR1:=0
+          VALOR2:=0
+          IF L>=21
+                  INKEY(0)
+                  L:=5
+                  TELA(4,2,22,77)
+          ENDIF
+          SET DECIMAL TO 0
+          SELE CONTABIL
+          SKIP
+ENDDO
+@ 22,17 CLEAR TO 22,76
+@ 22,17 SAY VRX PICT'@E 99,999,999,999.99'
+SETCOLOR('W+/N')
+@ 22,34 SAY 'D'
+SETCOLOR(GCOR1)
+@ 22,37 SAY VRY PICT'@E 99,999,999,999.99'
+SETCOLOR('W+/N')
+@ 22,55 SAY 'C'
+SETCOLOR(GCOR1)
+@ 22,58 SAY (VRX-VRY) PICT'@E 99,999,999,999.99'
+SETCOLOR('W+/N')
+IF VRX>VRY
+  @ 22,76 SAY 'D'
+ELSEIF VRX<VRY
+  @ 22,76 SAY 'C'
+ENDIF
+SETCOLOR(GCOR1)
+INKEY(0)
+RETURN
+
+
+
+
+
+
+FUNCTION CONS_CCALUNO
+B:=PROCNAME()
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+       RETURN
+ENDIF
+SET INDEX TO COMATIND
+IF !ABREARQ('CCALUNO','ALUNO','R',3)
+   RETURN
+ENDIF
+SELE ALUNO
+SET INDEX TO COALUIND
+DO WHILE .T.
+   NOMTELA('TIPOS DE CONSULTA')
+   O_CONS:=' '
+   TELA(3,15,5,65)
+   @ 4,16 SAY '1=Geral   2=Aluno   3=Devedores   4=Credores  '
+   @ 4,63 GET O_CONS PICT'9' VALID(O_CONS$ '1234 ')
+   READ
+   IF LASTKEY()=27
+      EXIT
+   ENDIF
+   IF O_CONS$'2'
+      CONS_PALUNO()
+    ELSEIF O_CONS$'1' .OR. O_CONS$'3' .OR. O_CONS$'4'
+      CONS_GALUNO()
+   ENDIF
+ENDDO
+RETURN
+
+
+
+FUNCTION CONS_GALUNO
+RETURN
+
+FUNCTION AGUAR_
+IF O_CONS$'1'
+  NOMTELA('CONSULTA SITUACAO DOS ALUNOS - GLOBAL')
+ELSEIF O_CONS$'3'
+  NOMTELA('CONSULTA ALUNOS DEVEDORES')
+ELSEIF O_CONS$'4'
+  NOMTELA('CONSULTA ALUNOS CREDORES')
+ENDIF
+SET DECIMAL TO 2
+C_ALU:=SPACE(6)
+SELE CADA_MAT
+SET INDEX TO NOMATIND
+GO TOP
+TELA(4,3,23,77)
+FOR I=5 TO 22
+        @ I,77 SAY CHR(177)
+NEXT
+@ 22,77 SAY CHR(25)
+PRIVATE X:={}
+IF O_CONS$'1'
+    DO WHILE .NOT. EOF()
+           SELE CADA_MAT
+           YX:=LEFT(NOM_ALU,25)+' '+COD_ALU+' '+GRAU+' '+SERIE+TURMA+'  '+LEFT(TEL_RESP,10)+'|'
+           VALOR1:=0
+           VALOR2:=0
+           SELE ALUNO
+           SUM ALUNO->VRLANC TO VALOR1 FOR ALUNO->TIPLCT='D' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SUM ALUNO->VRLANC TO VALOR2 FOR ALUNO->TIPLCT='C' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           VALOR1:=VALOR1-VALOR2
+           YX+=TRANSFORM(VALOR1,'@E 999,999,999,999.99')
+           AADD(X,YX)
+           SELE CADA_MAT
+           SKIP
+    ENDDO
+ ELSEIF O_CONS$'3'
+    DO WHILE .NOT. EOF()
+           SELE CADA_MAT
+           VALOR1:=0
+           VALOR2:=0
+           SELE ALUNO
+           SUM ALUNO->VRLANC TO VALOR1 FOR ALUNO->TIPLCT='D' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SUM ALUNO->VRLANC TO VALOR2 FOR ALUNO->TIPLCT='C' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           VALOR1:=VALOR1-VALOR2
+           SELE CADA_MAT
+           IF VALOR1>VALOR2
+              YX:=LEFT(NOM_ALU,25)+' '+COD_ALU+' '+GRAU+' '+SERIE+TURMA+'  '+LEFT(TEL_RESP,10)+'|'
+              YX+=TRANSFORM(VALOR1,'@E 999,999,999,999.99')
+              AADD(X,YX)
+           ENDIF
+           SKIP
+    ENDDO
+ ELSEIF O_CONS$'4'
+    DO WHILE .NOT. EOF()
+           SELE CADA_MAT
+           VALOR1:=0
+           VALOR2:=0
+           SELE ALUNO
+           SUM ALUNO->VRLANC TO VALOR1 FOR ALUNO->TIPLCT='D' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SUM ALUNO->VRLANC TO VALOR2 FOR ALUNO->TIPLCT='C' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SELE CADA_MAT
+           IF VALOR2>VALOR1
+              VALOR2:=VALOR1-VALOR2
+              YX:=LEFT(NOM_ALU,25)+' '+COD_ALU+' '+GRAU+' '+SERIE+TURMA+'  '+LEFT(TEL_RESP,10)+'|'
+              YX+=TRANSFORM(VALOR2,'@E 999,999,999,999.99')
+              AADD(X,YX)
+           ENDIF
+           SKIP
+    ENDDO
+   ENDIF
+   SETCOLOR(GCOR2)
+   DO WHILE .T. .OR. LASTKEY()#27
+        V:=SAVESCREEN(4,3,23,77)
+        OP:=ACHOICE(5,4,22,76,X,,'Fop',,)
+        RESTSCREEN(4,3,23,77,V)
+        IF OP=0
+           EXIT
+        ELSE
+           CONS_PALUNO((SUBSTR(X[OP],27,6)))
+        ENDIF
+   ENDDO
+   SETCOLOR(GCOR1)
+SET INDEX TO COMATIND
+RETURN
+
+
+
+
+
+FUNCTION CONS_PALUNO(SD)
+B:=PROCNAME()
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+       RETURN
+ENDIF
+SET INDEX TO COMATIND
+IF !ABREARQ('CCALUNO','ALUNO','R',3)
+   RETURN
+ENDIF
+SELE ALUNO
+SET INDEX TO COALUIND
+
+TELA30:=SAVESCREEN(3,3,23,77)
+SELE ALUNO
+GO TOP
+NOMTELA('CONSULTA LAN€AMENTOS FICHAS FINANCEIRA DO ALUNO')
+SET DECIMAL TO 2
+C_ALU:=SPACE(6)
+DO WHILE .T. .AND. LASTKEY()#27
+    TELA(4,3,6,77)
+    setcolor(GCOR8)
+    TELA(6,3,22,77,3,12,55,75,,,'  DATA','COD+COMPLEMENTO DO HISTORICO','        VALOR')
+    SETCOLOR(GCOR2)
+    IF EMPTY(SD)
+       @  5,4 SAY 'Cod.Aluno: ' GET C_ALU PICT'@R 99999-9' VALID(VER_6())
+    ELSE
+       C_ALU:=SD
+       SD:=NIL
+       @  5,4 SAY C_ALU+' '+LEFT(X[OP],25)
+    ENDIF
+    READ
+    IF LASTKEY()=27
+       EXIT
+    ENDIF
+    SELE ALUNO
+    SEEK C_ALU
+    IF LASTKEY()=27 .OR. FOUND()=.F.
+       EXIT
+    ENDIF
+       LI:=9
+       VALOR1:=0
+       VALOR2:=0
+       DO WHILE ALUNO->COD_ALU$C_ALU
+          @  LI,4 SAY DATALC PICT'@K'
+          SELE HISTO
+          GO TOP
+          SET INDEX TO COHISIND
+          SEEK ALUNO->CODHIS
+          @  LI,13 SAY CODHIS+' '+LEFT(ALLTRIM(HISTO->HISTOR),10)+' '+ALLTRIM(ALUNO->COMHIS)
+          @  LI,56 SAY ALUNO->VRLANC PICT'@E 999,999,999,999.99'
+          @  LI,76 SAY ALUNO->TIPLCT PICT'@SA!'
+          IF ALUNO->TIPLCT$'D'
+              VALOR1+=ALUNO->VRLANC
+          ELSEIF ALUNO->TIPLCT$'C'
+              VALOR2+=ALUNO->VRLANC
+          ENDIF
+          @ 22,46 CLEAR TO 22,77
+          IF VALOR1=VALOR2
+             @ 22,76 SAY ' '
+             SETCOLOR(GCOR1)
+             @ 22,47 SAY '[ Saldo :'
+             @ 22,56 SAY  (VALOR1-VALOR2) PICT'@E 999,999,999,999.99'
+          ELSEIF VALOR1>VALOR2
+             SETCOLOR(GCOR8)
+             @ 22,47 SAY '[ Saldo :'
+             @ 22,56 SAY  (VALOR1-VALOR2) PICT'@E 999,999,999,999.99'
+             @ 22,76 SAY 'D'
+          ELSE
+            SETCOLOR(GCOR1)
+             @ 22,47 SAY '[ Saldo :'
+             @ 22,56 SAY  (VALOR1-VALOR2) PICT'@E 999,999,999,999.99'
+            @ 22,76 SAY 'C'
+          ENDIF
+          @ 22,77 SAY ']'
+          SETCOLOR(GCOR1)
+          SELE ALUNO
+          SKIP
+          LI++
+          IF LI=21
+                 @ 21,77 SAY CHR(25)
+                 TONE(3500,2)
+                 CENTRA(24,0,'Pressiona qualquer tecla p/ continuar...')
+                 INKEY(0)
+                  TELA(6,3,22,77,3,12,55,75,,,'  DATA','COD+COMPLEMENTO DO HISTORICO','        VALOR')
+                 LI:=9
+                   FOR IV=7 TO 19
+                     @ IV,77 SAY CHR(177)
+                   NEXT
+           ENDIF
+       ENDDO
+       INKEY(0)
+ENDDO
+RESTSCREEN(3,3,23,77,TELA30)
+RETURN
+
+
+// RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR DE ALUNOS FINANCEIRO NOME/SE
+// RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR GRAU,MATR, NASC E IDADE, SITUACAO
+
+
+FUNCTION REHISPADR
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+SET INDEX TO HIHISIND
+GO TOP
+AGREL()
+NPAG:=1
+DO WHILE .NOT. EOF()  .AND. NEXTKEY()#27
+   CABEIMPRE()
+   NPAG++
+   @ PROW(),0 SAY+CHR(18)
+   @ PROW()+2,10 SAY+PADC('RELATORIO DE HISTORICO PADRAO',70)
+   @ PROW()+1,10 SAY REPL('=',70)
+   @ PROW()+1,10 SAY 'CODIGO|      HISTORICO'
+   @ PROW(),10   SAY 'CODIGO|      HISTORICO'
+   @ PROW(),10 SAY REPL('_',70)
+   DO WHILE .NOT. EOF() .AND.  PROW()<56 .AND. NEXTKEY()#27
+      @ PROW()+1,11 SAY HISTO->CODHIS PICT'@R 9999'
+      @ PROW(),16 SAY '|'
+      @ PROW(),20 SAY HISTO->HISTOR
+      SKIP
+   ENDDO
+ENDDO
+@ PROW()+1,10 SAY REPL('=',70)
+@ PROW()+1,44 SAY 'TOTAL DE HIST. CADASTRADOS: '
+@ PROW(),PCOL() SAY ALLTRIM(STR(LASTREC()))
+IF NEXTKEY()=27
+   @ PROW()+1,5 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+   @ PROW(),5   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+EJECT
+SET INDEX TO COHISIND
+SET DEVICE TO SCREEN
+SET DECIMAL TO 2
+RETURN
+
+
+
+
+FUNCTION RELA_ALUFIN
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+   RETURN
+ENDIF
+NOMTELA('RELATORIO FINANCEIROS DA SITUACAO DOS ALUNOS MATRICULADOS')
+TELA(3,15,9,65)
+@ 5,16 to 5,64
+@ 7,16 to 7,64
+C_1:=0
+C_2:=0
+C_3:=0
+@ 4,17 SAY '0=Todos  1=So Particular  3=Bolsitas ' GET C_1 PICT'9' VALID(C_1=0 .OR. C_1=1 .OR. C_1=3)
+@ 6,17 SAY '0=Todos  1=Internos       3=Externos ' GET C_2 PICT'9' VALID(C_2=0 .OR. C_2=1 .OR. C_2=3)
+@ 8,17 SAY '0=Todos  1=Escola         3=S.E.C    ' GET C_3 PICT'9' WHEN C_1=3  VALID(C_3=0 .OR. C_3=1 .OR. C_3=3)
+READ
+IF LASTKEY()=27
+   RETURN
+ENDIF
+SET INDEX TO NOMATIND
+AGREL()
+PI:=0
+NPAG:=1
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+CABEIMPRE()
+NPAG++
+   IF C_1=0 .AND. C_2=0
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - GERAL',120)
+   ELSEIF C_1=0 .AND. C_2=1
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - GERAL - So internos',120)
+   ELSEIF C_1=0 .AND. C_2=3
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - GERAL - So externos',120)
+   ELSEIF C_1=1 .AND. C_2=0
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - PARTICULAR - geral',120)
+   ELSEIF C_1=1 .AND. C_2=1
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - PARTICULAR - so internos',120)
+   ELSEIF C_1=1 .AND. C_2=3
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - PARTICULAR - so externos',120)
+   ELSEIF C_1=3 .AND. C_2=0 .AND. C_3=0
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - geral',120)
+   ELSEIF C_1=3 .AND. C_2=0 .AND. C_3=1
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - geral - Escola',120)
+   ELSEIF C_1=3 .AND. C_2=0 .AND. C_3=3
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - geral - SEC',120)
+   ELSEIF C_1=3 .AND. C_2=1 .AND. C_3=0
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - internos - geral',120)
+   ELSEIF C_1=3 .AND. C_2=1 .AND. C_3=1
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - internos - Escola',120)
+   ELSEIF C_1=3 .AND. C_2=1 .AND. C_3=3
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - internos - SEC',120)
+   ELSEIF C_1=3 .AND. C_2=3 .AND. C_3=0
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - externos - geral',120)
+   ELSEIF C_1=3 .AND. C_2=3 .AND. C_3=1
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - externos - Escola',120)
+   ELSEIF C_1=3 .AND. C_2=3 .AND. C_3=3
+     @ PROW()+1,15 SAY+PADC('RELATORIO DE MATRICULAS - FINANCEIRO - BOLSISTAS - externos - SEC',120)
+   ENDIF
+   @ PROW()+1,9 SAY REPL('=',120)
+   @ PROW()+1,10 SAY 'NOME                                | COD.ALUNO | SERIE | GRAU | SITUACAO '
+   @   PROW(),10 SAY 'NOME                                | COD.ALUNO | SERIE | GRAU | SITUACAO '
+   @ PROW(),9 SAY REPL('_',120)
+ DO WHILE .NOT. EOF() .AND. NEXTKEY()#27 .AND. PROW()<56
+   IF C_1=0 .AND. C_2=0
+      RELA_I()
+   ELSEIF C_1=0 .AND. C_2=1
+      IF SIT_INTE$'I'
+         RELA_I()
+     ENDIF
+   ELSEIF C_1=0 .AND. C_2=3
+      IF SIT_INTE$'E'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=1 .AND. C_2=0
+      IF SIT_ALUN$'1'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=1 .AND. C_2=1
+      IF SIT_ALUN='1' .AND. SIT_INTE$'I'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=1 .AND. C_2=3
+      IF SIT_ALUN='1' .AND. SIT_INTE$'E'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=0  .AND. C_3=0
+      IF SIT_ALUN='2'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=0 .AND. C_3=1
+      IF SIT_ALUN='2' .AND. SIT_ECON$'E'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=0 .AND. C_3=3
+      IF SIT_ALUN='2' .AND. SIT_ECON$'S'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=1 .AND. C_3=0
+      IF SIT_ALUN='2' .AND. SIT_INTE$'I'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=1 .AND. C_3=1
+      IF SIT_ALUN='2' .AND. SIT_INTE$'I' .AND. SIT_ECON$'E'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=1 .AND. C_3=3
+      IF SIT_ALUN='2' .AND. SIT_INTE$'I' .AND. SIT_ECON$'S'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=3  .AND. C_3=0
+      IF SIT_ALUN='2' .AND. SIT_INTE$'E'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=3 .AND. C_3=1
+      IF SIT_ALUN='2' .AND. SIT_INTE$'E'  .AND. SIT_ECON$'E'
+         RELA_I()
+      ENDIF
+   ELSEIF C_1=3 .AND. C_2=3 .AND. C_3=3
+      IF SIT_ALUN='2' .AND. SIT_INTE$'E'  .AND. SIT_ECON$'S'
+         RELA_I()
+      ENDIF
+   ENDIF
+   SKIP
+ ENDDO
+ENDDO
+IF NEXTKEY()=27
+      @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+      @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ELSE
+@ PROW()+1,9 SAY REPL('=',120)
+@ PROW()+1,100 SAY 'TOTAL: '
+@ PROW(),PCOL() SAY STRZERO(PI,5)
+ENDIF
+EJECT
+SET DEVICE TO SCREEN
+SET DECIMAL TO 2
+RETURN
+
+
+FUNCTION RELA_I
+       A:=NOM_ALU
+       MAIUSC(,,@A)
+       @ PROW()+1,11 SAY A
+       @ PROW(),46 SAY '|'
+       @ PROW(),50 SAY COD_ALU PICT'@R 99999-9'
+       @ PROW(),58 SAY '!'
+       @ PROW(),60 SAY SERIE+' '+TURMA
+       @ PROW(),66 SAY '|'
+       @ PROW(),70 SAY GRAU  PICT'9'
+       @ PROW(),73 SAY '|'
+      IF SIT_ALUN='1'
+         @ PROW(),75 SAY 'P'
+      ELSE
+        @ PROW(),75 SAY 'B'
+      ENDIF
+      IF SIT_INTE='I'
+         @ PROW(),77 SAY 'I'
+      ELSE
+         @ PROW(),77 SAY 'E'
+      ENDIF
+      IF SIT_ECON='E'
+         @ PROW(),79 SAY 'E'
+      ELSEIF SIT_ECON='S'
+         @ PROW(),79 SAY 'S'
+      ENDIF
+      PI++
+RETURN
+
+FUNCTION RELCONTA_CC
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','R',3)
+   RETURN
+ENDIF
+NOMTELA('RELATORIO POR CONTA CONTABIL DEBITO/CREDITO')
+CO_C:=SPACE(5)
+TELA(4,10,8,70)
+@ 5,11 SAY 'Conta:' GET CO_C PICT'@R 9999-9' VALID(VERCONTA(CO_C,5,25))
+@ 6,11 TO 6,69
+CO1:=CTOD(SPACE(8))
+CO2:=DATE()
+@ 7,11 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(co1))
+@ 7,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+READ
+IF EMPTY(CO_C) .OR. LASTKEY()=27 .OR. EMPTY(CO1) .OR. EMPTY(CO2)
+   RETURN
+ENDIF
+SELE CONTABIL
+GO TOP
+LOCATE FOR CONTABIL->CODI_CONT$(ALLTRIM(CO_C))
+NO1:=NOME_CONT
+SELE LAN_CONTAB
+SET INDEX TO DDCCONIN
+GO TOP
+AGREL()
+PI:=0
+PE:=0
+BI:=0
+BE:=0
+NPAG:=1
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+   CABEIMPRE()
+   NPAG++
+   @ PROW()+2,15 SAY+PADC('CONTA CONTABIL - '+CO_C+' '+ALLTRIM(NO1)+' - MOVIMENTACAO DE '+DTOC(CO1)+' a '+DTOC(CO2),120)
+   @ PROW()+1,9 SAY REPL('=',120)
+   @ PROW()+1,10 SAY '   DATA  :DEBITO:CREDITO:           COD+HISTORICO                          :   VR.LANCAMENTO   :     SALDO      '
+   @   PROW(),10 SAY '   DATA  :DEBITO:CREDITO:           COD+HISTORICO                          :   VR.LANCAMENTO   :     SALDO      '
+   @ PROW(),9 SAY REPL('_',120)
+    ILI:=7
+    VALORD:=0
+    VALORC:=0
+    DO WHILE .NOT. EOF() .AND. PROW()<56 .AND. NEXTKEY()#27
+        IF LAN_CONTAB->CONTAD$CO_C .OR. LAN_CONTAB->CONTAC$CO_C
+            IF CONTAD$CO_C
+                 VALORD+=VRLANC
+              ELSE
+                 VALORC+=VRLANC
+            ENDIF
+            IF LAN_CONTAB->DATALC>=CO1 .AND. LAN_CONTAB->DATALC<=CO2
+                  @ PROW()+1,10 SAY DATALC PICT'@D'
+                  @ PROW(),21   SAY CONTAD PICT'@R 99999'
+                  @ PROW(),28   SAY CONTAC PICT'@R 99999'
+                  SELE HISTO
+                  SET INDEX TO COHISIND
+                  SEEK LAN_CONTAB->CODHIS
+                  C:=ALLTRIM(HISTO->HISTOR)
+                  @ PROW(),36 SAY LAN_CONTAB->CODHIS+' '+C+' '+ALLTRIM(LAN_CONTAB->COMHIS)
+                  @ PROW(),81 SAY LAN_CONTAB->VRLANC PICT'@E 999,999,999,999.99'
+                  SELE LAN_CONTAB
+            IF VALORD>VALORC
+                  @   PROW(),101 SAY (VALORD-VALORC) PICT'@E 999,999,999,999.99'
+                  @     PROW(),PCOL()+1 SAY 'D'
+               ELSEIF VALORD<VALORC
+                  @   PROW(),101    SAY (VALORC-VALORD) PICT'@E 999,999,999,999.99'
+                  @   PROW(),PCOL()+1 SAY 'C'
+               ELSE
+                  @   PROW(),116    SAY '   .   .   .  0,00'
+                  @   PROW(),PCOL()+1 SAY '0'
+            ENDIF
+            @   PROW(),10 SAY '         :      :       :                                                  :                   :                '
+          ENDIF
+        ENDIF
+        SKIP
+    ENDDO
+    IF PROW()>55
+       EJECT
+    ENDIF
+ENDDO
+@ PROW(),9 SAY REPL('_',120)
+IF VALORD>VALORC
+  @ PROW()+1,85 SAY 'Saldo da Conta:'
+  @ PROW(),101 SAY (VALORD-VALORC) PICT'@E 999,999,999,999.99'
+  @ PROW(),101 SAY (VALORD-VALORC) PICT'@E 999,999,999,999.99'
+  @ PROW(),PCOL()+1 SAY 'D'
+ELSEIF VALORD<VALORC
+  @ PROW()+1,85 SAY 'Saldo da Conta:'
+  @ PROW(),101    SAY (VALORC-VALORD) PICT'@E 999,999,999,999.99'
+  @ PROW(),101    SAY (VALORC-VALORD) PICT'@E 999,999,999,999.99'
+  @ PROW(),PCOL()+1 SAY 'C'
+ENDIF
+IF NEXTKEY()=27
+      @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+      @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+EJECT
+SET DEVICE TO SCREEN
+SET DECIMAL TO 2
+RETURN
+
+
+
+
+FUNCTION RELBALANCO
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','R',3)
+   RETURN
+ENDIF
+NOMTELA('BALANCO CONTABIL  POR CONTA DATA')
+TELA(4,20,6,60)
+CO1:=CTOD(SPACE(8))
+CO2:=DATE()
+@ 5,25 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(CO1))
+@ 5,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+READ
+IF LASTKEY()=27
+       RETURN
+ENDIF
+@ 5,21 SAY ' Aguarde! Relatorio sendo montado !'
+VALOR1:=VALOR2:=VRX:=VRY:=TOTAT:=TOTPA:=0
+PRIVATE CONT_ATI:={ }, CT_ATI:={}, CONT_PAS:={ }, CT_PAS:={ }
+L:=5
+SELE CONTABIL
+GO TOP
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+   IF LEFT(STR(CONTABIL->CLAS_CONT),1)$'1'
+     AADD(CONT_ATI,(LEFT(CONTABIL->NOME_CONT,25)))
+     AADD(CT_ATI,(CONTABIL->TIPO_CONT+CONTABIL->CODI_CONT))
+   ELSE
+     AADD(CONT_PAS,(LEFT(CONTABIL->NOME_CONT,25)))
+     AADD(CT_PAS,(CONTABIL->TIPO_CONT+CONTABIL->CODI_CONT))
+   ENDIF
+   SKIP
+ENDDO
+SELE LAN_CONTAB
+SET INDEX TO DDCCONIN
+FI:=LEN(CONT_ATI)
+FE:=LEN(CONT_PAS)
+FOR I=1 TO FI
+   IF LEFT(CT_ATI[I],1)$'A'
+      D:=SUBSTR(CT_ATI[I],2,5)
+      GO TOP
+      SET DECIMAL TO 2
+      SUM VRLANC TO VALOR1 FOR CONTAD$D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+      SUM VRLANC TO VALOR2 FOR CONTAC$D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+      CONT_ATI[I]+=TRANSFORM((VALOR1-VALOR2),'@E 99,999,999,999.99')
+      TOTAT+=(VALOR1-VALOR2)
+      VALOR1:=0
+      VALOR2:=0
+      SET DECIMAL TO 0
+   ENDIF
+NEXT
+FOR I=1 TO FE
+   IF LEFT(CT_PAS[I],1)$'A'
+      D:=SUBSTR(CT_PAS[I],2,5)
+      GO TOP
+      SET DECIMAL TO 2
+      SUM VRLANC TO VALOR1 FOR CONTAD=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+      SUM VRLANC TO VALOR2 FOR CONTAC=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+      CONT_PAS[I]+=TRANSFORM((VALOR1-VALOR2),'@E 99,999,999,999.99')
+      TOTPA+=(VALOR1-VALOR2)
+      VALOR1:=0
+      VALOR2:=0
+      SET DECIMAL TO 0
+   ENDIF
+NEXT
+SELE CONTABIL
+GO TOP
+tone(170,5)
+@ 5,21 SAY ' Aguarde! Imprimindo...           !'
+SET DEVICE TO PRINTER
+NPAG:=CI:=CE:=1
+CL:=5
+DO WHILE CE<=FE .AND. NEXTKEY()#27
+      IF PROW()>=56
+         EJECT
+      ENDIF
+      CABEIMPRE()
+      NPAG++
+      @ PROW()+1,9 SAY+PADC('DEMONSTRATIVO CONTABIL - PERIODO DE '+DTOC(CO1)+' a '+DTOC(CO2),125)
+      @ PROW()+1,9 SAY REPL('=',125)
+      DO WHILE .T.
+          IF CI<=FI
+             CO:=IF( LEFT(CT_ATI[CI],1)$'S', 10, 15 )
+                   RT:=ASCAN(CT_ATI,'A',CI)
+                 IF CO=10
+                 //.AND. VAL(RIGHT(CONT_ATI[RT],17))#0
+                    @ CI,CO SAY LEFT(CONT_ATI[CI],25)
+                 ELSEIF CO=15
+                 //.AND. VAL(RIGHT(CONT_ATI[CI],17))#0
+                    @ CI,CO SAY CONT_ATI[CI]
+                 ENDIF
+          ENDIF
+          IF CE<=FE
+             CO:=IF(LEFT(CT_PAS[CE],1)$'S',75,80)
+                   RT:=ASCAN(CT_PAS,'A',CE)
+                 IF CO=75
+                 //.AND. VAL(RIGHT(CONT_PAS[RT],17))#0
+                     @ CE,CO SAY LEFT(CONT_PAS[CE],25)
+                 ELSEIF CO=80
+                 // .AND. VAL(RIGHT(CONT_PAS[CE],17))#0
+                     @ CE,CO SAY CONT_PAS[CE]
+                 ENDIF
+          ENDIF
+          CI++
+          CE++
+      ENDDO
+ENDDO
+SET DECIMAL TO 2
+IF NEXTKEY()#27
+         @ PROW()+1,35 SAY TOTAT PICT'@E 99,999,999,999.99'
+         @ PROW(),35   SAY REPL('_',15)
+         @ PROW()+1,105 SAY TOTPA PICT'@E 99,999,999,999.99'
+         @ PROW(),105   SAY REPL('_',15)
+ENDIF
+SET DECIMAL TO 0
+SETCOLOR(GCOR1)
+IF NEXTKEY()=27
+      @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+      @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+EJECT
+SET DEVICE TO SCREEN
+RETURN
+
+
+FUNCTION RELBALANCE
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','E',3)
+   RETURN
+ENDIF
+NOMTELA('RELATORIO - BALANCETE POR DATA')
+TELA(4,20,7,60)
+CO1:=CTOD(SPACE(8))
+CO2:=DATE()
+TC:=' '
+@ 5,25 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(CO1))
+@ 5,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+@ 6,25 SAY 'Emite Conta zerada-Y/N ? ' GET TC PICT'@SA!' VALID(TC$ 'YN ')
+READ
+IF LASTKEY()=27
+   RETURN
+ENDIF
+VALOR1:=0
+VALOR2:=0
+VRX:=0
+VRY:=0
+VDE:=0
+VCR:=0
+L:=5
+SET DECIMAL TO 0
+SELE CONTABIL
+SET ORDER TO 0
+GO TOP
+AGREL()
+SET DEVICE TO PRINTER
+NPAG:=1
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+      CABEIMPRE()
+      NPAG++
+      @ PROW()+1,9 SAY+PADC('DEMONSTRATIVO CONTABIL (BALANCETE) - PERIODO DE '+DTOC(CO1)+' a '+DTOC(CO2),125)
+      @ PROW()+1,9 SAY REPL('-',125)
+   @ PROW()+1,10 SAY 'CODIGO :  NOME DA CONTA                          :    VR. DEBITO     :    VR. CREDITO    :       VR. SALDO  '
+   @ PROW(),10   SAY 'CODIGO :  NOME DA CONTA                          :    VR. DEBITO     :    VR. CREDITO    :       VR. SALDO  '
+      @ PROW()+1,9 SAY REPL('=',125)
+      DO WHILE .NOT. EOF() .AND. NEXTKEY()#27 .and. prow()<56
+          IF TIPO_CONT$'A' .AND. VAL(RIGHT(STR(contabil->CLAS_CONT,12),5))#0
+              NOC:=NOME_CONT
+              D:=CONTABIL->CODI_CONT
+              SELE LAN_CONTAB
+              SET INDEX TO DDCCONIN
+              GO TOP
+              SET DECIMAL TO 2
+              SUM VRLANC TO VALOR1 FOR CONTAD=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+              SUM VRLANC TO VALOR2 FOR CONTAC=D .AND. DATALC>=CO1 .AND. DATALC<=CO2
+              IF TC$'N'
+               IF VALOR1#0 .OR. VALOR2#0
+                  @ PROW()+1,10 SAY D+' | '+NOC
+                  @ PROW(),59 SAY '|'
+                  @ PROW(),60 SAY VALOR1 PICT'@E 99,999,999,999.99'
+                  @ PROW(),79 SAY '|'
+                  @ PROW(),80 SAY VALOR2 PICT'@E 99,999,999,999.99'
+                  @ PROW(),99 SAY '|'
+                  VRX+=VALOR1
+                  VRY+=VALOR2
+                  @ PROW(),100 SAY ABS(VRX-VRY) PICT'@E 99,999,999,999.99'
+                     IF VRX>VRY
+                        @ PROW(),120 SAY 'D'
+                     ELSEIF VRX<VRY
+                        @ PROW(),120 SAY 'C'
+                     ENDIF
+               ENDIF
+              ELSE
+                 @ PROW()+1,10 SAY D+' | '+NOC
+                 @ PROW(),59 SAY '|'
+                 @ PROW(),60 SAY VALOR1 PICT'@E 99,999,999,999.99'
+                 @ PROW(),79 SAY '|'
+                 @ PROW(),80 SAY VALOR2 PICT'@E 99,999,999,999.99'
+                 @ PROW(),99 SAY '|'
+                 VRX+=VALOR1
+                 VRY+=VALOR2
+                 @ PROW(),100 SAY ABS(VRX-VRY) PICT'@E 99,999,999,999.99'
+                     IF VRX>VRY
+                        @ PROW(),120 SAY 'D'
+                     ELSEIF VRX<VRY
+                        @ PROW(),120 SAY 'C'
+                     ENDIF
+              ENDIF
+              VDE+=VRX
+              VCR+=VRY
+              VRX:=0
+              VRY:=0
+          ENDIF
+          VALOR1:=0
+          VALOR2:=0
+          SET DECIMAL TO 0
+          SELE CONTABIL
+          SKIP
+    ENDDO
+  @ PROW(),9 SAY REPL('_',125)
+ENDDO
+IF NEXTKEY()#27
+   @ PROW()+1,50 SAY 'TOTAIS....:'
+   @ PROW(),60   SAY  VDE PICT'@E 99,999,999,999.99'
+   @ PROW(),82   SAY VCR PICT'@E 99,999,999,999.99'
+   @ PROW(),100  SAY (VDE-VCR) PICT'@E 99,999,999,999.99'
+                     IF VDE>VCR
+                        @ PROW(),120 SAY 'D'
+                     ELSEIF VDE<VCR
+                        @ PROW(),120 SAY 'C'
+                     ENDIF
+   @ PROW()+1,9 SAY REPL('*',125)
+ELSEIF NEXTKEY()=27
+   @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+   @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+SETCOLOR(GCOR1)
+
+EJECT
+SET DEVICE TO SCREEN
+RETURN
+
+
+FUNCTION RELDIARIO
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','R',3)
+   RETURN
+ENDIF
+NOMTELA('RELATORIO - DIARIO CONTABIL')
+SETCOLOR(GCOR1)
+SELE LAN_CONTAB
+SET INDEX TO DDCCONIN
+GO TOP
+TELA(4,20,6,60)
+CO1:=CTOD(SPACE(8))
+CO2:=DATE()
+@ 5,25 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(CO1))
+@ 5,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+READ
+IF LASTKEY()=27
+   RETURN
+ENDIF
+VALOR1:=0
+VALOR2:=0
+VRX:=0
+VRY:=0
+SET DECIMAL TO 0
+L:=5
+AGREL()
+NPAG:=1
+set device to printer
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+   CABEIMPRE()
+   NPAG++
+   @ PROW()+1,0 SAY PADC('DIARIO CONTABIL',135)
+   @ PROW(),0   SAY PADC('DIARIO CONTABIL',135)
+   @ PROW()+1,9 SAY REPL('=',125)
+   @ PROW()+1,10 SAY '   DATA   | DEBITO  | CREDITO|           COD+HISTORICO                                    :    VR.LANCAMENTO    '
+   @   PROW(),10 SAY '   DATA   | DEBITO  | CREDITO|           COD+HISTORICO                                    :    VR.LANCAMENTO    '
+   @ PROW(),9 SAY REPL('_',125)
+   DO WHILE .NOT. EOF() .AND. NEXTKEY()#27 .AND. PROW()<56
+     IF LAN_CONTAB->DATALC>=CO1 .AND. LAN_CONTAB->DATALC<=CO2
+       @ PROW()+1,10 SAY LAN_CONTAB->DATALC
+       @   PROW(),19 SAY ' | '
+       @   PROW(),23 SAY LAN_CONTAB->CONTAD PICT'@R 9999-9'
+       @   PROW(),29 SAY ' | '
+       @   PROW(),33 SAY LAN_CONTAB->CONTAC PICT'@R 9999-9'
+       @   PROW(),38 SAY ' | '
+       SELE HISTO
+       SET INDEX TO COHISIND
+       SEEK LAN_CONTAB->CODHIS
+       C:=ALLTRIM(HISTO->HISTOR)
+       @   PROW(),40 SAY LAN_CONTAB->CODHIS+' '+C+' '+ALLTRIM(LAN_CONTAB->COMHIS)
+       @   PROW(),100 SAY ' | '
+       @   PROW(),105 SAY LAN_CONTAB->VRLANC PICT'@E 999,999,999,999.99'
+       SELE LAN_CONTAB
+     ENDIF
+      SKIP
+   ENDDO
+ENDDO
+@ PROW(),9 SAY REPL('_',125)
+IF NEXTKEY()=27
+   @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+   @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+EJECT
+SET DEVICE TO SCREEN
+SET DECIMAL TO 2
+RETURN
+
+
+
+FUNCTION RELDICFE
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADLANCO','LAN_CONTAB','R',3)
+   RETURN
+ENDIF
+NOMTELA('RELATORIO - DIARIO CONTABIL')
+SETCOLOR(GCOR1)
+SELE LAN_CONTAB
+SET INDEX TO DDCCONIN
+GO TOP
+TELA(4,20,6,60)
+CO1:=CTOD(SPACE(8))
+CO2:=DATE()
+@ 5,25 SAY 'Do dia ' GET CO1 PICT'@D' VALID(CO1<=DATE() .AND. !EMPTY(CO1))
+@ 5,COL()+3 SAY '… ' GET CO2 PICT'@D' VALID(CO2<=DATE() .AND. !EMPTY(CO2))
+READ
+IF LASTKEY()=27
+   RETURN
+ENDIF
+VALOR1:=0
+VALOR2:=0
+VRX:=0
+VRY:=0
+SET DECIMAL TO 0
+L:=5
+AGREL()
+NPAG:=1
+SET DEVICE TO PRINTER
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+   CABEIMPRE()
+   NPAG++
+   @ PROW()+1,0 SAY PADC('CONFERENCIA DO LANCAMENTO DIARIO',135)
+   @ PROW(),0   SAY PADC('CONFERENCIA DO LANCAMENTO DIARIO',135)
+   @ PROW()+1,9 SAY REPL('=',125)
+   @ PROW()+1,10 SAY '   DATA   | DEBITO=NOME DA CONTA                    |CREDITO=NOME DA CONTA'
+   @ PROW(),10   SAY '   DATA   | DEBITO=NOME DA CONTA                    |CREDITO=NOME DA CONTA'
+   @ PROW()+1,10 SAY '            COD+HISTORICO                                                                   :        VR. LANCAMENTO'
+   @ PROW(),10   SAY '            COD+HISTORICO                                                                   :        VR. LANCAMENTO'
+   @ PROW(),9 SAY REPL('_',125)
+   DO WHILE .NOT. EOF() .AND. NEXTKEY()#27 .AND. PROW()<56
+     IF LAN_CONTAB->DATALC>=CO1 .AND. LAN_CONTAB->DATALC<=CO2
+       @ PROW()+1,10 SAY LAN_CONTAB->DATALC
+       @   PROW(),19 SAY ' | '
+       @   PROW(),23 SAY LAN_CONTAB->CONTAD PICT'@R 9999-9'
+       @   PROW(),29 SAY '='
+       SELE CONTABIL
+       SET INDEX TO COCONIND
+       GO TOP
+       SEEK LAN_CONTAB->CONTAD
+       IF FOUND()
+         @ PROW(),30 SAY LEFT(ALLTRIM(NOME_CONT),30)
+       ENDIF
+       @   PROW(),61 SAY ' | '
+       @   PROW(),63 SAY LAN_CONTAB->CONTAC PICT'@R 9999-9'
+       @   PROW(),70 SAY '='
+       SELE CONTABIL
+       SET INDEX TO COCONIND
+       GO TOP
+       SEEK LAN_CONTAB->CONTAC
+       IF FOUND()
+         @ PROW(),72 SAY LEFT(ALLTRIM(NOME_CONT),30)
+       ENDIF
+       SELE HISTO
+       SET INDEX TO COHISIND
+       SEEK LAN_CONTAB->CODHIS
+       C:=ALLTRIM(HISTO->HISTOR)
+       @ PROW()+1,24 SAY PADR(LAN_CONTAB->CODHIS+' '+C+' '+ALLTRIM(LAN_CONTAB->COMHIS),75,'.')
+       @ PROW(),100  SAY ' | '
+       @ PROW(),105  SAY LAN_CONTAB->VRLANC PICT'@E 999,999,999,999.99'
+       @ PROW(),9    SAY REPL('_',125)
+       SELE LAN_CONTAB
+     ENDIF
+      SKIP
+   ENDDO
+ENDDO
+@ PROW(),9 SAY REPL('_',125)
+IF NEXTKEY()=27
+   @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+   @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+EJECT
+SET DEVICE TO SCREEN
+SET DECIMAL TO 2
+RETURN
+
+
+FUNCTION REL_PLCONT
+NOMTELA(' RELATORIO DO PLANO DE CONTAS DA ESCOLA ')
+IF !ABREARQ('CADCONTA','CONTABIL','R',3)
+    RETURN
+ENDIF
+OPPL:=' '
+TELA(10,20,13,60)
+SOMBRA(10,20,13,60)
+@ 11,22 SAY 'Contas : Analiticas ou Sinteticas -'
+@ 12,22 SAY ' Digite : A ou S (Enter p/ ambas) ' GET OPPL PICT'@SA!' VALID(OPPL$ 'AS ')
+READ
+IF LASTKEY()=27
+   RETURN
+ELSEIF EMPTY(OPPL)
+   OPPL:='T'
+ENDIF
+SELE CONTABIL
+SET INDEX TO
+GO TOP
+AGREL()
+SET DEVICE TO PRINTER
+NPAG:=1
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+   CABEIMPRE()
+   NPAG++
+   @ 02,00 SAY+CHR(18)+' '
+   @ PROW(),5   SAY+PADC('P L A N O   DE  C O N T A S',75)
+   @ PROW()+1,5 SAY REPL('=',75)
+   @ PROW()+1,5 SAY 'CLASSIFICACAO    : CODIGO:       NOME  DA CONTA                   :A/S'
+   @   PROW(),5 SAY 'CLASSIFICACAO    : CODIGO:       NOME  DA CONTA                   :A/S'
+   @ PROW(),5 SAY REPL('_',75)
+   DO WHILE .NOT. EOF() .AND. PROW()<56 .AND. NEXTKEY()#27
+      IF OPPL$'T'
+           @ PROW()+1,5 SAY STR(CLAS_CONT,12,0) PICT'@R 9.9.99.999.99999'
+           @ PROW(),22  SAY '|'
+           @ PROW(),23  SAY (VAL(CODI_CONT)) PICT'9999-9'
+           @ PROW(),30  SAY '|'
+           @ PROW(),31  SAY NOME_CONT PICT'@S40!'
+           @ PROW(),71  SAY '|'
+           @ PROW(),72  SAY TIPO_CONT PICT'@SA!'
+      ELSEIF OPPL$CONTABIL->TIPO_CONT
+           @ PROW()+1,5 SAY STR(CLAS_CONT,12,0) PICT'@R 9.9.99.999.99999'
+           @ PROW(),22  SAY '|'
+           @ PROW(),23  SAY (VAL(CODI_CONT)) PICT'9999-9'
+           @ PROW(),30  SAY '|'
+           @ PROW(),31  SAY NOME_CONT PICT'@S40!'
+           @ PROW(),71  SAY '|'
+           @ PROW(),72  SAY TIPO_CONT PICT'@SA!'
+       ENDIF
+      SKIP
+    ENDDO
+ENDDO
+@ PROW(),5 SAY REPL('_',75)
+IF NEXTKEY()=27
+   @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+   @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+EJECT
+SET DEVICE TO SCREEN
+RETURN
+
+
+
+FUNCTION SUBRELFICHA
+B:=PROCNAME()
+IF !ABREARQ('CADHISTO','HISTO','R',3)
+    RETURN
+ENDIF
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+       RETURN
+ENDIF
+SET INDEX TO NOMATIND
+IF !ABREARQ('CCALUNO','ALUNO','R',3)
+   RETURN
+ENDIF
+SELE ALUNO
+SET INDEX TO COALUIND
+PRIVATE X:={}
+TDE:=0
+NOMTELA('TIPOS DE RELATORIO - FICHA FINANCEIRA DOS ALUNOS')
+   O_PRE:=' '
+   TELA(3,15,5,65)
+   @ 4,16 SAY '1=Geral   2=Aluno   3=Devedores   4=Credores  '
+   @ 4,63 GET O_PRE PICT'9' VALID(O_PRE$ '2 ')
+   READ
+   IF LASTKEY()=27
+      RETURN
+   ENDIF
+   IF O_PRE$'2'
+      RELA_FICHALUNO()
+   ELSEIF O_PRE$'1'
+    MTREL()
+    DO WHILE .NOT. EOF()
+           SELE CADA_MAT
+           YX:=LEFT(NOM_ALU,35)+' | '+COD_ALU+' | '+GRAU+' | '+SERIE+TURMA+' | '+TEL_RESP+'|'
+           VALOR1:=0
+           VALOR2:=0
+           SELE ALUNO
+           SUM ALUNO->VRLANC TO VALOR1 FOR ALUNO->TIPLCT='D' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SUM ALUNO->VRLANC TO VALOR2 FOR ALUNO->TIPLCT='C' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           VALOR1:=VALOR1-VALOR2
+           TDE+=VALOR1
+           YX+=TRANSFORM(VALOR1,'@E 999,999,999,999.99')
+           AADD(X,YX)
+           SELE CADA_MAT
+           SKIP
+    ENDDO
+    RELA_FIGERA()
+  ELSEIF  O_PRE$'3'
+    MTREL()
+    DO WHILE .NOT. EOF()
+           SELE CADA_MAT
+           VALOR1:=0
+           VALOR2:=0
+           SELE ALUNO
+           SUM ALUNO->VRLANC TO VALOR1 FOR ALUNO->TIPLCT='D' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SUM ALUNO->VRLANC TO VALOR2 FOR ALUNO->TIPLCT='C' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           VALOR1:=VALOR1-VALOR2
+           SELE CADA_MAT
+           IF VALOR1>VALOR2
+              YX:=LEFT(NOM_ALU,35)+' | '+COD_ALU+' | '+GRAU+' | '+SERIE+TURMA+' | '+TEL_RESP+'|'
+              TDE+=VALOR1
+              YX+=TRANSFORM(VALOR1,'@E 999,999,999,999.99')
+              AADD(X,YX)
+           ENDIF
+           SKIP
+    ENDDO
+    RELA_FIGERA()
+  ELSEIF  O_PRE$'4'
+    MTREL()
+    DO WHILE .NOT. EOF()
+           SELE CADA_MAT
+           VALOR1:=0
+           VALOR2:=0
+           SELE ALUNO
+           SUM ALUNO->VRLANC TO VALOR1 FOR ALUNO->TIPLCT='D' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SUM ALUNO->VRLANC TO VALOR2 FOR ALUNO->TIPLCT='C' .AND. ALUNO->COD_ALU$CADA_MAT->COD_ALU
+           SELE CADA_MAT
+           IF VALOR2>VALOR1
+              VALOR2:=VALOR1-VALOR2
+              YX:=LEFT(NOM_ALU,35)+' | '+COD_ALU+' | '+GRAU+' | '+SERIE+TURMA+' | '+TEL_RESP+'|'
+              TDE+=VALOR2
+              YX+=TRANSFORM(VALOR2,'@E 999,999,999,999.99')
+              AADD(X,YX)
+           ENDIF
+           SKIP
+    ENDDO
+    RELA_FIGERA()
+ ENDIF
+RETURN
+
+
+FUNCTION RELA_FICHALUNO()
+B:=PROCNAME()
+SELE ALUNO
+SET INDEX TO COALUIND
+SET DECIMAL TO 2
+DO WHILE .T. .AND. LASTKEY()#27
+   NOMTELA('RELATORIO DE FICHA FINANCEIRA DO ALUNO')
+   C_ALU:=SPACE(6)
+   VALOR1:=0
+   VALOR2:=0
+   setcolor(GCOR8)
+   TELA(4,3,6,77)
+   SETCOLOR(GCOR1)
+   @  5,4 SAY 'Cod.Aluno: ' GET C_ALU PICT'@R 99999-9' VALID(C_ALU$'000000' .OR. VER_6())
+   READ
+   IF LASTKEY()=27
+      EXIT
+   ELSEIF EMPTY(C_ALU)
+      LOOP
+   ENDIF
+   SEEK C_ALU
+   IF .NOT. FOUND()
+      LOOP
+   ENDIF
+   @ 8,4 SAY ''
+   NPAG:=1
+   DO WHILE ALUNO->COD_ALU$C_ALU .AND. NEXTKEY()#27
+      AGREL()
+      CABEIMPRE()
+      NPAG++
+      @ PROW()+2,0 SAY PADC('FICHA FINANCEIRA ',136)
+      @ PROW()+1,0 SAY PADC('ALUNO : '+CADA_MAT->COD_ALU+' '+ALLTRIM(CADA_MAT->NOM_ALU), 136)
+      @ PROW(),0  SAY PADC('ALUNO : '+CADA_MAT->COD_ALU+' '+ALLTRIM(CADA_MAT->NOM_ALU), 136)
+      @ PROW()+1,9 SAY REPL('=',120)
+      @ PROW()+1,20 SAY '   DATA  : COD+HISTORICO                          :   VR.LANCAMENTO   '
+      @   PROW(),20 SAY '   DATA  : COD+HISTORICO                          :   VR.LANCAMENTO     '
+      @ PROW(),9 SAY REPL('_',120)
+      DO WHILE PROW()<56 .AND. NEXTKEY()#27 .AND. ALUNO->COD_ALU$C_ALU
+         IF TIPLCT$'D'
+             VALOR1+=ALUNO->VRLANC
+          ELSEIF TIPLCT$'C'
+             VALOR2+=ALUNO->VRLANC
+          ENDIF
+          @  PROW()+1,21 SAY DATALC PICT'@K'
+          SELE HISTO
+          GO TOP
+          SET INDEX TO COHISIND
+          SEEK ALUNO->CODHIS
+          @  PROW(),32 SAY CODHIS+' '+LEFT(ALLTRIM(HISTO->HISTOR),10)+' '+ALLTRIM(ALUNO->COMHIS)
+          @  PROW(),71 SAY ALUNO->VRLANC PICT'@E 999,999,999,999.99'
+          @  PROW(),90 SAY ALUNO->TIPLCT PICT'A'
+          SELE ALUNO
+          SKIP
+      ENDDO
+      @ PROW(),9    SAY REPL('_',120)
+      @ PROW()+1,55 SAY 'Saldo da Conta:'
+      @ PROW(),71   SAY (VALOR1-VALOR2) PICT'@E 999,999,999,999.99'
+      @ PROW(),71   SAY (VALOR1-VALOR2) PICT'@E 999,999,999,999.99'
+      IF VALOR1=VALOR2
+          @ PROW(),90 SAY ' '
+       ELSEIF VALOR1>VALOR2
+          @ PROW(),90 SAY 'D'
+       ELSE
+          @ PROW(),90 SAY 'C'
+       ENDIF
+   ENDDO
+   IF NEXTKEY()=27
+      @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+      @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+   ENDIF
+   EJECT
+   SET DEVICE TO SCREEN
+   SET DECIMAL TO 2
+ENDDO
+RETURN
+
+
+
+FUNCTION RELA_FIGERA
+CO:=1
+CQ:=LEN(X)
+AGREL()
+NPAG:=1
+DO WHILE CO<=CQ .AND. NEXTKEY()#27
+     CABEIMPRE()
+     NPAG++
+     IF O_PRE$'1'
+        @ PROW()+2,0 SAY PADC('SITUACAO FINANCEIRA GERAL DOS ALUNOS',136)
+        @ PROW(),0   SAY PADC('SITUACAO FINANCEIRA GERAL DOS ALUNOS',136)
+     ELSEIF O_PRE$'3'
+        @ PROW()+2,0 SAY PADC('SITUACAO FINANCEIRA - ALUNOS DEVEDORES',136)
+        @ PROW(),0   SAY PADC('SITUACAO FINANCEIRA - ALUNOS DEVEDORES',136)
+     ELSEIF O_PRE$'4'
+        @ PROW()+2,0 SAY PADC('SITUACAO FINANCEIRA - ALUNOS CREDORES',136)
+        @ PROW(),0   SAY PADC('SITUACAO FINANCEIRA - ALUNOS CREDORES',136)
+     ENDIF
+     @ PROW()+1,9 SAY REPL('=',126)
+     DO WHILE PROW()<56 .AND. NEXTKEY()#27 .AND. CO<=CQ
+            @  PROW()+1,10 SAY X[CO]
+            CO ++
+     ENDDO
+ ENDDO
+@ PROW()+1,9 SAY REPL('_',126)
+@ PROW()+1,00 SAY+PADL('Total.........:'+TRANSFORM(TDE, '@E 999,999,999,999.99'),134)
+@ PROW()+2,9 SAY REPL('#',126)
+IF NEXTKEY()=27
+      @ PROW()+1,21 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+      @ PROW(),21   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ ENDIF
+EJECT
+SET DEVICE TO SCREEN
+SET DECIMAL TO 2
+RETURN
