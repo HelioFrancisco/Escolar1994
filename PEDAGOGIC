@@ -1,0 +1,433 @@
+
+FUNCTION PEDAGOGICO
+NOMTELA('ORIENTACAO PEDAGàGICA - CONTROLE DA VIDA ESCOLAR DO ALUNO')
+DO WHILE .T.
+      @         2,1 PROMPT '  1.LANCAMENTO   '  MESS '[ Lacto. diversos (Discip.;teste;provas) ]'
+      @ ROW(),COL() PROMPT '  2.CONTROLES   '   MESS '[ Controle de desempenho cfe. informacoes]'
+      @ ROW(),COL() PROMPT '  3.CONSULTA   '    MESS '[         vide menu p/ escolha           ]'
+      @ ROW(),COL() PROMPT '  4.RELATORIOS  '   MESS '[         vide menu p/ escolha           ]'
+      @ ROW(),COL() PROMPT '  5.RETORNAR   '    MESS '[       Retorna a 1a. tela               ]'
+     MENU TO O9
+     TE_2:=SAVESCREEN(0,0,24,79)
+     DO CASE
+       CASE O9=1
+            SUB_PEDAGOGICO()
+       CASE O9=2
+            INDISPO()
+       CASE O9=2
+            INDISPO()
+       CASE O9=4
+            REL_PEDAGOGICO()
+       CASE LASTKEY()=19
+            O2:=5
+            EXIT
+      CASE LASTKEY()=4
+            O2:=3
+            EXIT
+       CASE O9=5 .OR. O9=0 .OR. LASTKEY()=27
+          TEL22:=SAVESCREEN(2,3,23,78)
+          TELA(3,69,6,77)
+          @ 4,70 PROMPT '1->SIM '
+          @ 5,70 PROMPT '2->NAO '
+          MENU TO OPC
+          IF OPC=1
+             CLEAR
+             EXIT
+           ELSE
+             RESTSCREEN(2,3,23,78,TEL22)
+          ENDIF
+      ENDC
+      CLOSE ALL
+   RESTSCREEN(0,00,24,79,TE_2)
+ENDDO
+RESTSCREEN(0,00,24,79,TE_2)
+RETURN
+
+
+FUNCTION SUB_PEDAGOGICO
+DO WHILE .T.
+SETCOLOR(GCOR7)
+TELA(3,2,9,18)
+SETCOLOR(GCOR2)
+      @       4,3 PROMPT '1.VIDA ESCOLAR ' MESS '[       Rotina ainda nao disponivel      ]'
+      @ ROW()+1,3 PROMPT '2.(TESTE+PROVA)' MESS '[Lcto.Teste+prova p/ estatistica pedagog.]'
+      @ ROW()+1,3 PROMPT '3.OC. MEDICAS  ' MESS '[Lcto.de ocor.medicas e medidas tomadas  ]'
+      @ ROW()+1,3 PROMPT '4.OC.DISCIPLIN.' MESS '[   Lcto.de ocor.disciplinares graves    ]'
+      @ ROW()+1,3 PROMPT '5.RETORNAR     ' MESS '[       Retorna a tela anterior          ]'
+     MENU TO O5
+     SETCOLOR(GCOR1)
+     TE_5:=SAVESCREEN(0,0,24,79)
+     DO CASE
+       CASE O5=1
+            INDISPO()
+       CASE O5=2
+            NO_PEDAGOGIA()
+       CASE O5=3
+            INDISPO()
+       CASE O5=4
+            OC_PEDAGO()
+       CASE O5=5 .OR. O5=0 .OR. LASTKEY()=27
+             CLEAR
+             EXIT
+      ENDC
+      CLOSE ALL
+      SETCOLOR(GCOR1)
+   RESTSCREEN(0,00,24,79,TE_5)
+ENDDO
+RESTSCREEN(0,00,24,79,TE_5)
+RETURN
+
+
+
+
+
+// ***********   ROTINAS LAN€AMENTO DE NOTAS PARA ESTATISTICA PEDAGOGICA ******
+
+
+FUNCTION NO_PEDAGOGIA
+NOMTELA('LAN€AMENTO DE NOTAS(TESTE+PROVA) - PEDAGOGIA ESTATISTICA')
+A:=PROCNAME()
+WT:=2
+WE:=''
+SENH()
+IF WT=1; RETURN; ENDIF
+IF !ABREARQ('TEMPUSUA','SABEDOR','E',3)
+   RETURN
+ENDIF
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+   RETURN
+ENDIF
+IF !ABREARQ('CADNOTAS','NOTA','E',3)
+   RETURN
+ENDIF
+ATU:=0
+SETCOLOR(GCOR2)
+SET DECIMAL TO 2
+DO WHILE .T. .OR. LASTKEY()#27
+   @ 3,3 CLEAR TO 3,77
+     O:=' ';TP_LC:=' '; GR:=' '; SE:=' '; N_MATE:='000'; C_PROF:='000'; RE:=' '
+     BI:=' '; TU:=' '; ARMCOD:={}; NALU:={}
+     @ 3,01           SAY' Grau:'        GET GR     PICT'9' VALID(GR$ '12')
+     @ ROW(),COL()+1 SAY 'Serie:'       GET SE     PICT'9' VALID(SE$ '12345678')
+     @ ROW(),COL()+1 SAY 'Turma:'       GET TU     PICT'@SA!' VALID(TU$ 'ABEU')
+     @ ROW(),COL()+1 SAY 'Disciplina.:' GET N_MATE PICT'@R 99-9'
+     @ ROW(),COL()+1 SAY 'Prof.:'       GET C_PROF PICT'@R 99-9'
+     @ ROW(),COL()+1 SAY 'Bim.:'        GET BI     PICT'9' VALID(BI$ '1234')
+     @ ROW(),COL()+1 SAY 'Tipo.:'       GET RE     PICT'@SA!' VALID(RE$ 'PT')
+     @ ROW(),COL() SAY '     '
+     READ
+     IF LASTKEY()=27
+        EXIT
+     ENDIF
+     SELE SABEDOR
+     SET INDEX TO USTEMIND
+     SEEK (GR+SE+TU+N_MATE)
+   IF FOUND()=.T.
+      TONE(200,0.3)
+      TONE(1400,1)
+      TONE(600,0.5)
+      AX:=1
+   ELSEIF FOUND()=.F.
+      TONE(251,1)
+      AX:=0
+   ENDIF
+     SELE CADA_MAT
+     SET INDEX TO GSMATIND
+     SET ORDER TO 1
+     SEEK (GR+SE+TU)
+     DO WHILE GRAU$GR .AND. SERIE$SE .AND. TURMA$TU
+           AADD(ARMCOD,COD_ALU)
+           AADD(NALU,NUCLASSE)
+           SKIP
+     ENDDO
+     CT:=LEN(ARMCOD)
+   PRIVATE NOTALU[(LEN(ARMCOD))]
+        AFILL(NOTALU,00.00)
+   IF AX=1
+        SELE NOTA
+        SET INDEX TO CMNOTIND
+        AT1:=1
+        SEEK (ARMCOD[AT1]+N_MATE+BI)
+        DO WHILE FOUND()
+             IF BI$'1' .AND. RE='T'
+                 NOTALU[AT1]:=NOTA->NT1
+             ELSEIF BI$'2' .AND. RE='T'
+                 NOTALU[AT1]:=NOTA->NT2
+             ELSEIF BI$'3' .AND. RE='T'
+                 NOTALU[AT1]:=NOTA->NT3
+             ELSEIF BI$'4' .AND. RE='T'
+                 NOTALU[AT1]:=NOTA->NT4
+             ELSEIF BI$'1' .AND. RE='P'
+                 NOTALU[AT1]:=NOTA->NP1
+             ELSEIF BI$'2' .AND. RE='P'
+                 NOTALU[AT1]:=NOTA->NP2
+             ELSEIF BI$'3' .AND. RE='P'
+                 NOTALU[AT1]:=NOTA->NP3
+             ELSEIF BI$'4' .AND. RE='P'
+                 NOTALU[AT1]:=NOTA->NP4
+             ENDIF
+             AT1++
+             IF AT1>CT
+                EXIT
+             ENDIF
+             SEEK (ARMCOD[AT1]+N_MATE+BI)
+       ENDDO
+    ENDIF
+     GO TOP
+     SETCOLOR('N/B')
+     T6:=SAVESCREEN(5,10,23,70)
+     IF CT<=15 .AND. CT>0
+        TELA(5,33,23,43,33,36,43,,,,'N§',' Nota')
+        C:=34
+     ELSEIF CT>15 .AND. CT<31
+        TELA(5,24,23,34,24,27,34,,,,'N§',' Nota')
+        TELA(5,38,23,49,39,42,49,,,,'N§',' Nota')
+        C:=25
+     ELSEIF CT>30 .AND. CT<46
+        TELA(5,10,23,20,10,13,20,,,,'N§',' Nota')
+        TELA(5,25,23,35,25,28,35,,,,'N§',' Nota')
+        TELA(5,40,23,50,40,43,50,,,,'N§',' Nota')
+        C:=11
+     ELSEIF CT>45
+        TELA(5,10,23,20,10,13,20,,,,'N§',' Nota')
+        TELA(5,25,23,35,25,28,35,,,,'N§',' Nota')
+        TELA(5,40,23,50,40,43,50,,,,'N§',' Nota')
+        TELA(5,55,23,64,55,57,64,,,,'N§',' Nota')
+        C:=11
+     ENDIF
+     SETCOLOR(GCOR1)
+     Q:=1
+     T:=8
+     FOR Q:=1 TO CT
+        @  T,C    SAY NALU[Q] PICT'99'
+        @  T,C+3  GET NOTALU[Q] PICT'99.99'
+         IF Q=15
+            T:=7
+            C+=15
+         ELSEIF Q=30
+            T:=7
+            C+=15
+         ELSEIF Q=45
+            T:=7
+            C+=15
+         ELSEIF Q=60
+            EXIT
+         ENDIF
+       T++
+     NEXT
+  READ
+  AQ:=0
+  FOR I=1 TO CT
+      IF EMPTY(NOTALU[I])
+         AQ:=1
+      ENDIF
+  NEXT
+  IF AQ=1
+     TONE(1000,2)
+     TONE(500,3)
+     A1:=SAVESCREEN(22,10,24,70)
+     TELA(22,10,24,70)
+     A2:=SPACE(1)
+     @ 23,20 SAY 'Existe NOTA com valor zerado! [C]onfirma ?'
+     @ 23,COL()+2 GET A2 PICT'@SA!' VALID(A2$ 'C ')
+     READ
+     RESTSCREEN(22,10,24,70,A1)
+     IF EMPTY(A2)
+        RESTSCREEN(5,10,23,70,T6)
+        LOOP
+     ENDIF
+   ENDIF
+   @ 24,26 SAY 'CONFIRMA INCLUSÇO ? Y/N [ ] '
+   @ 24,51 GET O PICT'@SA!' VALID(O$ 'YN')
+   READ
+   IF LASTKEY()=27
+      EXIT
+   ENDIF
+   IF O$'Y' .AND. .NOT. EMPTY(SE) .AND. .NOT. EMPTY(BI)
+      SELE SABEDOR
+        APPEND BLANK
+        REPLACE SERIE WITH  SE,;
+           GRAU  WITH  GR,;
+           TURMA WITH  TU,;
+           MAT_T WITH  N_MATE,;
+           PRO_T WITH  C_PROF,;
+           BIM_T WITH BI,;
+           USU_T WITH  SENHA,;
+           DAT_T WITH  DATE(),;
+           HOR_T WITH  TIME()
+      SELE NOTA
+      SET INDEX TO CMNOTIND
+      FOR I=1 TO CT
+          IF AX=0
+             APPEND BLANK
+          ELSEIF AX=1
+              SEEK (ARMCOD[I]+N_MATE+BI)
+          ENDIF
+          REPLACE NOTA->COD_ALU WITH ARMCOD[I] ,;
+                  MAT_NOT WITH N_MATE,;
+                  PRO_NOT WITH C_PROF,;
+                  GST_NOT WITH (GR+SE+TU)
+                  IF BI$'1' .AND. RE='T'
+                     REPLACE NT1 WITH NOTALU[I]
+                  ELSEIF BI$'2' .AND. RE='T'
+                     REPLACE NT2 WITH NOTALU[I]
+                  ELSEIF BI$'3' .AND. RE='T'
+                     REPLACE NT3 WITH NOTALU[I]
+                  ELSEIF BI$'4' .AND. RE='T'
+                     REPLACE NT4 WITH NOTALU[I]
+                  ELSEIF BI$'1' .AND. RE='P'
+                     REPLACE NP1 WITH NOTALU[I]
+                  ELSEIF BI$'2' .AND. RE='P'
+                     REPLACE NP2 WITH NOTALU[I]
+                  ELSEIF BI$'3' .AND. RE='P'
+                     REPLACE NP3 WITH NOTALU[I]
+                  ELSEIF BI$'4' .AND. RE='P'
+                     REPLACE NP4 WITH NOTALU[I]
+                  ENDIF
+                  ATU:=1
+       NEXT
+      COMMIT
+  ELSE
+     RESTSCREEN(5,10,23,70,T6)
+     LOOP
+ ENDIF
+O:=SPACE(1)
+AX:=0
+RESTSCREEN(5,10,23,70,T6)
+ENDDO
+SELE NOTA
+IF ATU=1
+   TE100:=SAVESCREEN(12,23,13,57)
+   @ 12,25 clear to 13,57
+   SET CURSOR OFF
+   @ 12,26 SAY 'Espere,vou arrumar o arq. !   '
+   @ 13,26 SAY 'Indexando arquivos, aguarde...'
+   SET CURSOR ON
+   INDEX ON COD_ALU+MAT_NOT TO CMNOTIND
+   INDEX ON GST_NOT+MAT_NOT TO GMNOTIND
+RESTSCREEN(12,23,13,57,TE100)
+ENDIF
+SET INDEX TO CMNOTIND
+RETURN
+
+
+
+FUNCTION OC_PEDAGO
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+   RETURN
+ENDIF
+IF !ABREARQ('CADPEDAG','CADPEDA','E',3)
+   RETURN
+ENDIF
+NOMTELA('LAN€AMENTO DE OCORRENCIAS DISCIPLINARES ')
+SETCOLOR(GCOR1)
+DO WHILE .T.
+    TELA(4,7,6,73)
+    TELA(7,4,23,76)
+    SET DECIMAL TO 2
+    SELE CADA_MAT
+    SET INDEX TO COMATIND
+    B:=PROCNAME()
+    C_ALU:=SPACE(6)
+    @ 5,8 SAY 'C¢d.Aluno: ' GET C_ALU PICT'@R 99999-9' VALID(VER_6())
+    READ
+    IF LASTKEY()=27 .OR. EMPTY(C_ALU)
+       RETURN
+    ENDIF
+    SEEK C_ALU
+    @ 5,53 SAY ' N§.:'+NUCLASSE+' '+SERIE+TURMA
+    SELE CADPEDA
+    SET INDEX TO COPEDIND
+    SEEK C_ALU
+    REPLACE OCORREN WITH MEMOEDIT(OCORREN,8,5,22,75,.T.)
+    COMMIT
+ENDDO
+RETURN
+
+
+
+
+FUNCTION REL_PEDAGOGICO
+IF !ABREARQ('CADMATRI','CADA_MAT','R',3)
+   RETURN
+ENDIF
+IF !ABREARQ('MATERIAS','MATER','R',3)
+       RETURN
+ENDIF
+IF !ABREARQ('CADNOTAS','NOTA','R',3)
+       RETURN
+ENDIF
+SET INDEX TO GMNOTIND
+AGREL()
+SET DEVICE TO PRINTER
+NPAG:=1
+DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+    CABEIMPRE()
+    NPAG++
+    @ PROW()+1,15 SAY+PADC('RELATORIO ESTATISTICO P/ PEDAGOGIA - NOTAS BIMESTRAIS+RECUPERACAO',120)
+    @ PROW()+1,9 SAY REPL('=',125)
+    SELE CADA_MAT
+    SET INDEX TO COMATIND
+    X:=1
+    DO WHILE .NOT. EOF() .AND. NEXTKEY()#27
+        SELE NOTA
+        C:=NOTA->MAT_NOT
+        SELE MATER
+        SET INDEX TO MATECIND
+        SEEK C
+        D:=MATER->MATERIA
+        IF X=1
+            @ PROW()+1,10 SAY D
+            SELE NOTA
+            @ PROW()+1,10 SAY 'Grau: '+LEFT(GST_NOT,1)+' Serie: '+SUBSTR(GST_NOT,2,1)+' Turma: '+SUBSTR(GST_NOT,3,1)
+            @ PROW(),9  SAY+REPL('_',125)
+            @ PROW()+1,20 SAY 'NOME                                   |BIM.|FALTAS |RECUP.|FALTAS'
+            @ PROW(),20   SAY 'NOME                                   |BIM.|FALTAS |RECUP.|FALTAS'
+            @ PROW(),9  SAY+REPL('_',125)
+            @ PROW()+1,9  SAY ' '
+        ENDIF
+        SELE NOTA
+        A:=COD_ALU
+        SELE CADA_MAT
+        SEEK A
+        A:=LEFT(NOM_ALU,15)
+        @ PROW()+1,13 SAY NUCLASSE+' '+A
+        SELE NOTA
+        @ PROW(),33  SAY IF(NOTA->NB1#0,NOTA->NB1,' ### ')
+        @ PROW(),39  SAY IF(NOTA->FN1#0,TRANSFORM(NOTA->FN1,'99'),' ##')
+        @ PROW(),43  SAY IF(NOTA->NR1#0,NOTA->NR1,' ### ')
+        @ PROW(),49  SAY IF(NOTA->FR1#0,TRANSFORM(NOTA->FR1,'99'),' ##')
+        @ PROW(),53  SAY IF(NOTA->NB2#0,NOTA->NB2,' ### ')
+        @ PROW(),59  SAY IF(NOTA->FN2#0,TRANSFORM(NOTA->FN2,'99'),' ##')
+        @ PROW(),63  SAY IF(NOTA->NR2#0,NOTA->NR2,' ### ')
+        @ PROW(),69  SAY IF(NOTA->FR2#0,TRANSFORM(NOTA->FR2,'99'),' ##')
+        @ PROW(),73  SAY IF(NOTA->NB3#0,NOTA->NB3,' ### ')
+        @ PROW(),79  SAY IF(NOTA->FN3#0,TRANSFORM(NOTA->FN3,'99'),' ##')
+        @ PROW(),83  SAY IF(NOTA->NR3#0,NOTA->NR3,' ### ')
+        @ PROW(),89  SAY IF(NOTA->FR3#0,TRANSFORM(NOTA->FR3,'99'),' ##')
+        @ PROW(),93  SAY IF(NOTA->NB4#0,NOTA->NB4,' ### ')
+        @ PROW(),99  SAY IF(NOTA->FN4#0,TRANSFORM(NOTA->FN4,'99'),' ##')
+        @ PROW(),103 SAY IF(NOTA->NR4#0,NOTA->NR4,' ### ')
+        @ PROW(),109 SAY IF(NOTA->FR4#0,TRANSFORM(NOTA->FR4,'99'),' ##')
+        @ PROW(),10  SAY '                       |     |   |     |   |     |   |     |   |     |   |     |   |     |   |     |   |  XX  | X |'
+        SKIP
+        IF NOTA->MAT_NOT#C
+            X:=1
+            @ PROW()+1,9  SAY+REPL('-',125)
+        ELSE
+            X:=0
+        ENDIF
+        IF PROW()>55
+           EJECT
+           EXIT
+        ENDIF
+    ENDDO
+ENDDO
+@ PROW()+3,9  SAY+REPL('=',128)
+IF NEXTKEY()=27
+      @ PROW()+1,5 SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+      @ PROW(),5   SAY ' *******  CUIDADO - RELATORIO CANCELADO POR PEDIDO USUARIO ANTES DO TERMINO! *******'
+ENDIF
+EJECT
+SET DEVICE TO SCREEN
+RETURN
