@@ -1,0 +1,177 @@
+           ***** BIOSYSTEM© *****
+    * INFORMATICA E ASSESSORIA EM SISTEMAS *
+
+O Sistema integrado escolar está  protegido 
+contra copia!
+Evite problemas no seu micro caso sua copia
+seja PIRATA; entre em contato com A BIOSYSTEM©,
+fazemos um preço parcelado, e AI SIM , estara
+seguro de ver seu SISTEMA PIRATEADO sumir de
+repente.
+
+Faz-se necessario dizer que o mesmo foi elaborado
+para trabalhar em rede, logo roda em monousuario
+e rede NOVELL©  ou similar.
+
+Alem do SOCORRO(manual) ON-LINE, voce tem tambem,
+isto e, teclando a F4 um SOCORRO muito especial,
+imagine(!) : Voce quer saber o codigo, sem sair
+da tela que esta, e sem consultar AQUELE MONTE DE
+LISTAGEM.!
+
+Teclando F4 aparecera um SOCORRO do campo, com os
+codigo e sua respectivas chaves(nome, descricao),
+posicione o cursor sobre o nome e tecle ESC.
+Automaticamente sera assumido o codigo respectivo
+no lugar que voce quer! Nao e facil?!
+
+NOTA: So funciona sobre campo onde o codigo seja
+um campo chave (tambem em outros nem e necessario!)
+
+Veja o Indice por assunto, e tecle o numero que
+esta a frente, para ver informacoes detalhadas
+sobre cada rotina.
+
+1. ACESSO AO SISTEMA
+2. SECRETARIA ESCOLAR
+3. FINANCAS
+4. ADMINISTRATIVO
+5.PEDAGOGICO
+6.MANAGER SYSTEM ( GERENTE DO SISTEMA)
+7. COLOCACOES DO AUTOR
+
+(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)
+(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)
+
+01          ACESSO AO SISTEMA
+
+Todos os modulos requerem senhas de acesso que
+deverao ser previamente cadastradas pelo MANAGER
+do CPD (Operador do sistema), tendo sua data de
+validade estipulado, cancelando-se ao vencer.
+
+Isto impede que ex-funcionarios acessem ao
+sistema depois de algum tempo e facam MISERIA
+dentro dele.
+
+    # Senhas
+
+    E composta de at‚ 5 caracteres podendo ser
+    qualquer um do teclado; exceto as de
+    controle.
+    Ex.: HOME, END, NUM LOCK, ( essas nao valem)
+
+
+    # Usuarios
+
+    E o funcionario encarregado de utilizar o
+    sistema, faz-se muito importante o seu
+    cadastramento, pois qualquer ERRO podera
+    ser detectado quem o FEZ .
+
+    Evite colocar como usuario mais de 2 pessoas
+    por setor, e que essas sejam de PLENA
+    CONFIANCA e RESPONSAVEIS. Muito dos problemas
+    no sistema acontecem por negligencias dos
+    usuarios.
+
+
+    # Privilegios
+    
+    Cada sub-sistema podera ser acessado
+    por todos usuarios, dependendo de seu
+    privilegio.
+    Constitui de um numero de 1 a 3 sendo:
+        (1) - Acesso total
+              Altera, Consulta, Relatorios
+
+        (2) - Acesso Consulta e Relatorios
+
+        (3) - Acesso Consulta
+              Somente consulta e mais nada!
+
+
+(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)(:)
+
+02          SECRETARIA
+
+
+
+Este modulo trata de todos os aspectos
+relacionados com a SECRETARIA ESCOLAR de um
+Estabelecimento de ensino, dando amplo e plena
+seguranca tanto a quem opera como a todos que
+venham necessitar de informacoes prestadas por
+este MODULO.
+
+E de sumo importancia frisar que a FICHA DE
+MATRICULA, deve estar totalmente preenchida com
+os dados exatos. Isto se deve ao fato de que
+varias modulos acessarao a este para colher
+informacoes referente a vida do ALUNO.
+
+Existem diversos sub-sistemas, cada qual com
+rotinas espeficas, orientando a selecao por
+menus, tendo como regra geral para escolha
+digitar o numero ou letra que estiver a frente da
+opcao, ou andar com as setas pelas opcoes
+teclando ENTER quando estiver pronto.Isto vale
+para todo o SISTEMA INTEGRADO ESCOLAR.
+
+
+
+Apos passar pela primeira tela da senha, surge as
+opcoes em linhas unicas horizontal; para acessar
+a SECRETARIA tecla-se 1 ou ENTER sobre a mesma.
+
+Surgira outra tela com opcoes em linhas da mesma
+forma, tendo como opcao:
+
+    Cadastro
+        Cadastra e altera diversas informacoes; a
+        alteracao so se realiza quando tenta-se
+        cadastrar alguns dado ja cadastrado.
+
+    Lancamento
+        Exclusivo para lancamento/alteracao de
+        notas; para alterar segue a mesma regra
+        do item acima.
+
+    Consulta
+        Consulta por ordem diversas, tendo no
+        modulo de MATRICULA uma segunda tela
+        mostrando a TELA COMPLETA ao teclar-se
+        ENTER sobre um nome.
+
+    Relatorio
+        Relatorio diversos,; na sua maioria pdem
+        ser abortandos(cancelados) pela tecla ESC.
+        Em alguns ha tela posteriores com opcoes
+        de emissao siga os passos indicados na
+        tela.
+
+    Configuracao
+        Configura o sistema para que aparecam os
+        ALUNOS apagados(transferidos), S para
+        aparecer e N para nao.
+
+
+    Retornar
+        Retorna a tela anterior, no caso a 1a.
+        quando se inicia o SISTEMA, surge a
+        mensagem de confirmacao, pois muitas
+        vezes e precionado a tecla ESC sem querer.
+
+
+
+        SUB-SISTEMAS DA SECRETARIA
+
+    MATRICULAS
+    MATERIA
+    PROFESSOR
+    GRADE ESCOLAR
+    ARQ. MORTO
+    MENSAGENS
+
+
+( sendo elaborado ainda...!)
